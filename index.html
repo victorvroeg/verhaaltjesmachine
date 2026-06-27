@@ -93,6 +93,8 @@
   select{font-family:inherit;font-size:15px;font-weight:600;color:#fff;cursor:pointer;
     background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:9px 11px;}
   select option{color:#1a1430;}
+  .voice-badge{font-size:14px;font-weight:600;color:#ffe6a0;display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,217,122,.14);border:1px solid rgba(255,217,122,.3);border-radius:12px;padding:8px 12px;}
 
   .zelf-hint{display:none;font-size:15px;font-weight:600;color:#ffe6a0;margin:0 0 14px;}
   #text{font-size:20px;line-height:1.95;font-weight:500;color:#efeaff;}
@@ -174,12 +176,11 @@
       <button class="btn" id="restart" aria-label="Opnieuw beginnen"><span class="em">🔁</span></button>
       <label for="speed">Tempo</label>
       <select id="speed">
-        <option value="0.82">Rustig</option>
-        <option value="0.95" selected>Gewoon</option>
+        <option value="0.9">Rustig</option>
+        <option value="1" selected>Gewoon</option>
         <option value="1.1">Vlot</option>
       </select>
-      <label for="voice">Stem</label>
-      <select id="voice"></select>
+      <span class="voice-badge">🎙️ Papa's stem</span>
     </div>
 
     <p class="zelf-hint" id="zelfHint">📖 Lees maar lekker voor — hieronder staat het hele verhaaltje. 💛</p>
@@ -410,7 +411,6 @@
   var restart=document.getElementById("restart");
   var back=document.getElementById("back");
   var speedSel=document.getElementById("speed");
-  var voiceSel=document.getElementById("voice");
   var goBtn=document.getElementById("go");
   var specialBtn=document.getElementById("special");
   var slider=document.getElementById("minutes");
@@ -429,44 +429,16 @@
   });
   slider.addEventListener("input",function(){ minOut.textContent=slider.value; });
 
-  var synth=window.speechSynthesis;
-  var sentences=[];
-  var idx=0;
-  var playing=false;
-  var dutchVoices=[];
-  var chosenVoice=null;
   var mode="luister";
-
-  function isNl(v){ return /nl(-|_)?/i.test(v.lang); }
-  function populateVoices(){
-    if(!synth)return;
-    var voices=synth.getVoices()||[];
-    dutchVoices=voices.filter(isNl);
-    voiceSel.innerHTML="";
-    if(!dutchVoices.length){
-      var o=document.createElement("option");
-      o.value=""; o.textContent="Standaardstem";
-      voiceSel.appendChild(o);
-      chosenVoice=null;
-      return;
-    }
-    dutchVoices.forEach(function(v,i){
-      var opt=document.createElement("option");
-      opt.value=String(i); opt.textContent=v.name;
-      voiceSel.appendChild(opt);
-    });
-    var keep=dutchVoices.indexOf(chosenVoice);
-    if(keep<0){ chosenVoice=dutchVoices[0]; keep=0; }
-    voiceSel.value=String(keep);
-  }
-  if(synth){ populateVoices(); if(synth.onvoiceschanged!==undefined){ synth.onvoiceschanged=populateVoices; } }
-  voiceSel.addEventListener("change",function(){
-    var i=parseInt(voiceSel.value,10);
-    if(!isNaN(i)&&dutchVoices[i]){
-      chosenVoice=dutchVoices[i];
-      if(playing){ var keep=idx; pause(); idx=keep; play(); }
-    }
-  });
+  var audioBase="audio/";
+  var segs=[];
+  var pts=[];
+  var ai=0;
+  var playing=false;
+  var pausedMid=false;
+  var audioEl=new Audio();
+  audioEl.preload="auto";
+  function setRate(){ var r=parseFloat(speedSel.value); audioEl.playbackRate=(r&&r>0)?r:1; }
 
   function wc(s){ return s.trim().split(/\s+/).length; }
 
@@ -489,17 +461,12 @@
     return chosen;
   }
 
-  function splitSentences(t){
-    var parts=t.match(/[^.!?…]+[.!?…]+[\s]*/g);
-    return parts?parts.map(function(p){return p.trim();}):[t];
-  }
-  function renderText(fullText){
-    sentences=splitSentences(fullText);
+  function renderSegments(){
     textEl.innerHTML="";
-    sentences.forEach(function(s,i){
+    segs.forEach(function(s,i){
       var span=document.createElement("span");
       span.className="sent"; span.setAttribute("data-i",i);
-      span.textContent=s+" ";
+      span.textContent=s.text+" ";
       textEl.appendChild(span);
     });
   }
@@ -530,53 +497,56 @@
     b.addEventListener("click",function(){ setMode(b.getAttribute("data-mode")); });
   });
 
-  function openReader(title,sub,em,fullText,pointsArr){
+  function openReader(title,sub,em,segArr,pointsArr){
     stop();
     rTitle.textContent=title;
     rSub.textContent=sub||"";
     rEm.textContent=em;
-    renderText(fullText);
-    renderPoints(pointsArr||[]);
-    idx=0;
+    segs=segArr; pts=pointsArr||[];
+    renderSegments(); renderPoints(pts);
+    ai=0; noteEl.textContent="";
     chooser.style.display="none";
     reader.style.display="block";
-    if(!synth){ noteEl.textContent="Op dit apparaat kan ik niet hardop voorlezen, maar je kunt het verhaaltje gewoon lezen of zelf vertellen."; }
-    else { noteEl.textContent=""; }
     setMode("luister");
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  function speakFrom(i){
-    if(!synth)return;
-    if(i>=sentences.length){ finish(); return; }
-    idx=i; highlight(i);
-    var u=new SpeechSynthesisUtterance(sentences[i]);
-    u.lang="nl-NL";
-    if(chosenVoice)u.voice=chosenVoice;
-    u.rate=parseFloat(speedSel.value);
-    u.pitch=1;
-    u.onend=function(){ if(playing){ speakFrom(i+1); } };
-    synth.speak(u);
+  function playSeg(i){
+    if(i>=segs.length){ finish(); return; }
+    ai=i; highlight(i);
+    audioEl.src=segs[i].file;
+    setRate();
+    var p=audioEl.play();
+    if(p&&p.catch){ p.catch(function(){}); }
   }
+  audioEl.addEventListener("ended",function(){ if(playing){ playSeg(ai+1); } });
+  audioEl.addEventListener("error",function(){
+    if(playing){
+      playing=false; pausedMid=false;
+      toggleEm.textContent="▶️"; toggleText.textContent="Voorlezen";
+      noteEl.textContent="Dit verhaaltje is nog niet in papa's stem klaar. Kies hierboven “Papa leest voor”, of probeer een ander onderwerp.";
+    }
+  });
+
   function play(){
-    if(!synth)return;
-    playing=true;
+    if(!segs.length)return;
+    playing=true; noteEl.textContent="";
     toggleEm.textContent="⏸️"; toggleText.textContent="Pauze";
-    if(idx>=sentences.length)idx=0;
-    speakFrom(idx);
+    if(pausedMid && audioEl.src){ pausedMid=false; setRate(); var p=audioEl.play(); if(p&&p.catch){ p.catch(function(){}); } }
+    else { if(ai>=segs.length)ai=0; playSeg(ai); }
   }
   function pause(){
-    playing=false; if(synth)synth.cancel();
+    playing=false; pausedMid=true; try{audioEl.pause();}catch(e){}
     toggleEm.textContent="▶️"; toggleText.textContent="Verder lezen";
   }
   function finish(){
-    playing=false; if(synth)synth.cancel();
-    idx=0; highlight(-1);
+    playing=false; pausedMid=false; try{audioEl.pause();}catch(e){}
+    ai=0; highlight(-1);
     toggleEm.textContent="▶️"; toggleText.textContent="Nog een keer";
   }
   function stop(){
-    playing=false; if(synth)synth.cancel();
-    idx=0;
+    playing=false; pausedMid=false; try{audioEl.pause();}catch(e){}
+    ai=0;
     toggleEm.textContent="▶️"; toggleText.textContent="Voorlezen";
   }
 
@@ -590,20 +560,25 @@
     var t=themes[key];
     var mins=parseInt(slider.value,10);
     var ind=pickIndices(t,mins);
-    var fullText=[t.intro].concat(ind.map(function(i){return t.scenes[i];})).concat([t.ending]).join(" ");
-    var pts=[t.introPt].concat(ind.map(function(i){return t.scenePts[i];})).concat([t.endingPt]);
+    var segKeys=["intro"].concat(ind).concat(["ending"]);
+    var segArr=segKeys.map(function(k){
+      var text=(k==="intro")?t.intro:((k==="ending")?t.ending:t.scenes[k]);
+      return { text:text, file:audioBase+key+"-"+k+".mp3" };
+    });
+    var pointsArr=[t.introPt].concat(ind.map(function(i){return t.scenePts[i];})).concat([t.endingPt]);
     var sub=(surprise?"Verrassing! ":"")+"ongeveer "+mins+" minuten";
-    openReader(t.name,sub,surprise?"🎲":t.em,fullText,pts);
+    openReader(t.name,sub,surprise?"🎲":t.em,segArr,pointsArr);
   });
   specialBtn.addEventListener("click",function(){
-    openReader(papaStory.title,"Een verhaaltje speciaal voor jou",papaStory.em,papaStory.text,papaStory.points);
+    openReader(papaStory.title,"Een verhaaltje speciaal voor jou",papaStory.em,
+      [{text:papaStory.text, file:audioBase+"papa.mp3"}], papaStory.points);
   });
 
   toggle.addEventListener("click",function(){ if(playing){ pause(); } else { play(); } });
-  restart.addEventListener("click",function(){ pause(); idx=0; highlight(-1); play(); });
+  restart.addEventListener("click",function(){ stop(); play(); });
   back.addEventListener("click",function(){ stop(); reader.style.display="none"; chooser.style.display="block"; window.scrollTo({top:0,behavior:"smooth"}); });
-  speedSel.addEventListener("change",function(){ if(playing){ var keep=idx; pause(); idx=keep; play(); } });
-  window.addEventListener("beforeunload",function(){ if(synth)synth.cancel(); });
+  speedSel.addEventListener("change",setRate);
+  window.addEventListener("beforeunload",function(){ try{audioEl.pause();}catch(e){} });
 })();
 </script>
 </body>
