@@ -52,7 +52,8 @@
     box-shadow:0 0 18px rgba(255,213,120,.25);}
   .pill .em{font-size:20px;line-height:1;}
 
-  .slider-wrap{display:flex;align-items:center;gap:16px;max-width:520px;margin-bottom:34px;}
+  .slider-wrap{display:flex;align-items:center;gap:16px;max-width:520px;margin-bottom:10px;}
+  .slidehint{font-size:13.5px;color:#b3ade0;font-weight:500;margin:0 0 30px;}
   input[type=range]{flex:1;height:8px;border-radius:8px;-webkit-appearance:none;appearance:none;
     background:rgba(255,255,255,.16);outline:none;}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;
@@ -246,9 +247,10 @@
 
     <p class="label">2. Hoe lang mag het duren?</p>
     <div class="slider-wrap">
-      <input type="range" min="3" max="15" value="6" step="1" id="minutes" />
-      <span class="mins"><span id="minOut">6</span> min</span>
+      <input type="range" min="3" max="60" value="6" step="1" id="minutes" />
+      <span class="mins" id="minOut">6 min</span>
     </div>
+    <p class="slidehint">🌙 Bij een langere tijd vertelt papa meerdere verhaaltjes achter elkaar, tot je in slaap valt.</p>
 
     <button class="go" id="go"><span class="em">✨</span> Vertel mijn verhaaltje</button>
 
@@ -312,7 +314,10 @@
     sky.appendChild(st);
   }
 
-  var WPM=105;
+  var WPM=150;
+  var ALLKEYS=["astronaut","voetbal","piloot","ridders","dinos","piraten","grappig","raceauto","superheld","jungle","robots","tshirt"];
+  function randKey(not){ var k; do{ k=ALLKEYS[Math.floor(Math.random()*ALLKEYS.length)]; }while(k===not&&ALLKEYS.length>1); return k; }
+  function fmtDuur(v){ return v>=60 ? "1 uur" : (v+" min"); }
 
   var themes={
     astronaut:{name:"Een astronautenavontuur",em:"🚀",
@@ -649,7 +654,8 @@
       selTheme=b.getAttribute("data-theme");
     });
   });
-  slider.addEventListener("input",function(){ minOut.textContent=slider.value; });
+  slider.addEventListener("input",function(){ minOut.textContent=fmtDuur(parseInt(slider.value,10)); });
+  minOut.textContent=fmtDuur(parseInt(slider.value,10));
 
   var mode="luister";
   var audioBase="audio/";
@@ -773,23 +779,34 @@
   }
 
   goBtn.addEventListener("click",function(){
-    var key=selTheme; var surprise=false;
-    if(key==="verras"){
-      var keys=["astronaut","voetbal","piloot","ridders","dinos","piraten","grappig","raceauto","superheld","jungle","robots","tshirt"];
-      key=keys[Math.floor(Math.random()*keys.length)];
-      surprise=true;
-    }
-    var t=themes[key];
+    var firstKey=selTheme; var surprise=false;
+    if(firstKey==="verras"){ firstKey=randKey(); surprise=true; }
     var mins=parseInt(slider.value,10);
-    var ind=pickIndices(t,mins);
-    var segKeys=["intro"].concat(ind).concat(["ending"]);
-    var segArr=segKeys.map(function(k){
-      var text=(k==="intro")?t.intro:((k==="ending")?t.ending:t.scenes[k]);
-      return { text:text, file:audioBase+key+"-"+k+".mp3" };
-    });
-    var pointsArr=[t.introPt].concat(ind.map(function(i){return t.scenePts[i];})).concat([t.endingPt]);
-    var sub=(surprise?"Verrassing! ":"")+"ongeveer "+mins+" minuten";
-    openReader(t.name,sub,surprise?"🎲":t.em,segArr,pointsArr);
+    var targetWords=mins*WPM;
+    var MINCHAIN=Math.round(2.2*WPM);
+    var segArr=[], pointsArr=[], used=0, count=0, curKey=firstKey;
+    while(count<14){
+      var t=themes[curKey];
+      var remMin=(targetWords-used)/WPM;
+      var ind=pickIndices(t, count===0?mins:remMin);
+      var segKeys=["intro"].concat(ind).concat(["ending"]);
+      segKeys.forEach(function(k){
+        var text=(k==="intro")?t.intro:((k==="ending")?t.ending:t.scenes[k]);
+        segArr.push({ text:text, file:audioBase+curKey+"-"+k+".mp3" });
+        used+=wc(text);
+      });
+      pointsArr.push(t.introPt);
+      ind.forEach(function(i){ pointsArr.push(t.scenePts[i]); });
+      pointsArr.push(t.endingPt);
+      count++;
+      if(targetWords-used < MINCHAIN) break;
+      curKey=randKey(curKey);
+    }
+    var first=themes[firstKey];
+    var title=(count>1)?"Slaapverhaaltjes achter elkaar":first.name;
+    var em=(count>1)?"🌙":(surprise?"🎲":first.em);
+    var sub=(surprise?"Verrassing! ":"")+"ongeveer "+fmtDuur(mins)+(count>1?(" · "+count+" verhaaltjes"):"");
+    openReader(title,sub,em,segArr,pointsArr);
   });
   specialBtn.addEventListener("click",function(){
     openReader(papaStory.title,"Een verhaaltje speciaal voor jou",papaStory.em,
