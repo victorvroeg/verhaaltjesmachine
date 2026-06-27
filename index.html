@@ -40,6 +40,15 @@
   h1{font-size:30px;font-weight:700;margin:0;letter-spacing:.3px;}
   .sub{margin:5px 0 0;font-size:15px;color:#c5bff0;font-weight:500;}
 
+  .langbar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px;justify-content:center;}
+  .langbtn{font-family:inherit;font-size:14.5px;font-weight:600;color:#cfc8f5;cursor:pointer;
+    background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.16);border-radius:13px;
+    padding:7px 13px;display:inline-flex;align-items:center;gap:7px;transition:.15s;}
+  .langbtn:hover{background:rgba(255,255,255,.12);transform:translateY(-1px);}
+  .langbtn:active{transform:scale(.97);}
+  .langbtn .fl{font-size:18px;line-height:1;}
+  .langbtn.sel{border-color:#ffd97a;background:rgba(255,217,122,.18);color:#fff;box-shadow:0 0 14px rgba(255,213,120,.2);}
+
   .label{font-size:17px;font-weight:600;margin:0 0 12px;color:#efeaff;}
   .row{display:flex;flex-wrap:wrap;gap:11px;margin-bottom:30px;}
 
@@ -228,6 +237,10 @@
   </div>
 
   <div id="chooser">
+    <div class="langbar" id="langbar">
+      <button class="langbtn sel" data-lang="nl"><span class="fl">🇳🇱</span> Nederlands</button>
+      <button class="langbtn" data-lang="en"><span class="fl">🇬🇧</span> English</button>
+    </div>
     <p class="label">1. Waar gaat je avontuur over?</p>
     <div class="row" id="theme">
       <button class="pill" data-theme="astronaut"><span class="em">🚀</span> Astronaut</button>
@@ -317,7 +330,7 @@
   var WPM=150;
   var ALLKEYS=["astronaut","voetbal","piloot","ridders","dinos","piraten","grappig","raceauto","superheld","jungle","robots","tshirt"];
   function randKey(not){ var k; do{ k=ALLKEYS[Math.floor(Math.random()*ALLKEYS.length)]; }while(k===not&&ALLKEYS.length>1); return k; }
-  function fmtDuur(v){ return v>=60 ? "1 uur" : (v+" min"); }
+  function fmtDuur(v){ return v+" "+UI[lang].unit; }
 
   var themes={
     astronaut:{name:"Een astronautenavontuur",em:"🚀",
@@ -621,6 +634,370 @@
     text:"Er was eens een papa die elke avond verhaaltjes vertelde. Hij verzon de gekste avonturen, zomaar uit zijn hoofd, terwijl zijn ogen twinkelden. Maar op een avond was de papa heel erg moe, zo moe dat de woorden in zijn hoofd in slaap waren gevallen voordat hij ze kon vertellen. Het spijt me, zei hij zacht, vanavond lukt het me niet. Toen gebeurde er iets bijzonders. Een klein sterretje aan de hemel had al die avonden meegeluisterd, elke avond opnieuw. En het sterretje kende alle verhaaltjes van papa van buiten, woord voor woord. Het liet zijn licht door het raam naar binnen glijden, tot vlak bij het oor van het kind. Ik vertel het wel even verder, fluisterde de ster. En zo vertelde het sterretje het verhaaltje dat papa anders verteld zou hebben, met dezelfde warme stem in het hart van het kind. Want weet je, een verhaaltje verdwijnt nooit echt. Het wacht gewoon, in de sterren, in de maan, en in alle mensen die van je houden. En zelfs als papa te moe is, of als je een keer te laat naar bed gaat, blijft er altijd iemand wakker om je een verhaaltje te geven. De ster glansde nog één keer extra helder, speciaal voor jou. Slaap maar lekker, fluisterde de ster. Wij passen samen op je. En het kind glimlachte, met de stem van papa nog zachtjes nagloeiend in zijn dromen. Welterusten. Tot morgen.",
     points:["Papa is een keer te moe om voor te lezen.","Een sterretje aan de hemel heeft alle verhaaltjes van papa meegeluisterd en kent ze van buiten.","Het sterretje vertelt het verhaaltje zachtjes verder, met papa's warme stem.","Een verhaaltje verdwijnt nooit: het wacht in de sterren, de maan en in iedereen die van je houdt.","Er is altijd iemand wakker die over je waakt. Welterusten."]};
 
+  var lang="nl";
+
+  var UI={
+    nl:{ sub:"Kies je eigen avontuur voor vannacht 🌙", l1:"1. Waar gaat je avontuur over?", l2:"2. Hoe lang mag het duren?",
+      slidehint:"🌙 Bij een langere tijd vertelt papa meerdere verhaaltjes achter elkaar, tot je in slaap valt.",
+      go:"Vertel mijn verhaaltje", special:"Het verhaaltje voor als papa moe is", back:"Andere kiezen",
+      mListen:"Laat voorlezen", mSelf:"Papa leest voor", mKey:"Steekwoorden",
+      tempo:"Tempo", spCalm:"Rustig", spNorm:"Gewoon", spFast:"Vlot", voice:"🎙️ Papa's stem",
+      play:"Voorlezen", pause:"Pauze", resume:"Verder lezen", again:"Nog een keer",
+      zelfHint:"📖 Lees maar lekker voor — hieronder staat het hele verhaaltje. 💛",
+      ptsHint:"📝 Het verhaaltje in steekwoorden — vertel het zelf maar, op jouw manier. 💛",
+      foot:"🌙 Welterusten — gemaakt met liefde 💛",
+      about:"ongeveer", unit:"min", stories:"verhaaltjes", surprise:"Verrassing! ",
+      marathon:"Slaapverhaaltjes achter elkaar", specialSub:"Een verhaaltje speciaal voor jou",
+      notReady:"Dit verhaaltje is nog niet in papa's stem klaar. Kies hierboven “Papa leest voor”, of probeer een ander onderwerp.",
+      pills:{astronaut:"Astronaut",voetbal:"Voetbal",piloot:"Piloot",ridders:"Ridders",dinos:"Dino's",piraten:"Piraten",grappig:"Grappig",raceauto:"Raceauto's",superheld:"Superheld",jungle:"Jungle",robots:"Robots",tshirt:"T-shirt",verras:"Verras me"} },
+    en:{ sub:"Choose your own adventure for tonight 🌙", l1:"1. What is your adventure about?", l2:"2. How long should it last?",
+      slidehint:"🌙 With a longer time, dad tells several stories in a row, until you fall asleep.",
+      go:"Tell my story", special:"The story for when dad is tired", back:"Choose another",
+      mListen:"Read to me", mSelf:"Read it yourself", mKey:"Keywords",
+      tempo:"Speed", spCalm:"Calm", spNorm:"Normal", spFast:"Brisk", voice:"🎙️ Dad's voice",
+      play:"Read", pause:"Pause", resume:"Continue", again:"Once more",
+      zelfHint:"📖 Read it out loud — the whole story is below. 💛",
+      ptsHint:"📝 The story in keywords — tell it your own way. 💛",
+      foot:"🌙 Good night — made with love 💛",
+      about:"about", unit:"min", stories:"stories", surprise:"Surprise! ",
+      marathon:"Bedtime stories in a row", specialSub:"A story just for you",
+      notReady:"This story isn't ready in dad's voice yet. Choose “Read it yourself” above, or try another topic.",
+      pills:{astronaut:"Astronaut",voetbal:"Football",piloot:"Pilot",ridders:"Knights",dinos:"Dinos",piraten:"Pirates",grappig:"Funny",raceauto:"Race cars",superheld:"Superhero",jungle:"Jungle",robots:"Robots",tshirt:"T-shirt",verras:"Surprise me"} }
+  };
+
+  var STORIES={en:{
+    astronaut:{name:"A space adventure",
+      intro:"Sam was the youngest astronaut in the whole world. Tonight, for the very first time, he was allowed to go into space all by himself, in his shiny spaceship the Star Arrow. He put on his white space suit, fastened his helmet and climbed into the seat. On the screen appeared the words: ready for launch, captain Sam. He took a deep breath and smiled wide.",
+      introPt:"Sam, the youngest astronaut, climbs into his spaceship the Star Arrow. Ready for launch.",
+      scenes:[
+        "Three, two, one, blast off! The engines roared and the Star Arrow shot upward. Sam was pressed gently into his seat as the ship broke through the white clouds. Then, all at once, it became very quiet. Through the little window he saw the earth, a big blue marble with wisps of white cloud around it. He had never seen anything so beautiful. Wow, whispered Sam, and he waved at all the people down below who were going to sleep now.",
+        "In space everything was weightless, and that was such fun. Sam's sandwich floated through the cabin, his pencil spun around and one of his socks drifted cheerfully past his nose. Sam unbuckled his belt and floated along too, his arms spread wide like a bird. He let go of a drop of apple juice, which danced through the air like a shiny little ball. Sam snapped at it, gulp, and he had to laugh so hard that three more drops escaped.",
+        "The Star Arrow landed softly on the moon, with a little plop in the grey moon dust. Sam stepped outside and took the very first step. Boing! On the moon he was so light that he could jump metres high. He jumped and jumped, higher than a house, laughing the whole time. Then he planted a little flag in the ground, with a drawing of his own house on it. Now there was a piece of home, all the way up on the moon.",
+        "Suddenly Sam saw something small and green peeking out from behind a rock. It was a friendly little space creature with big round eyes, named Glimp. Hello, said Glimp in a squeaky voice, do you want to play? Together they played catch-the-stardust, plucking glittering specks out of the air that glowed in their hands. Glimp gave Sam a small, warm little stone that softly gave off light. For you, squeaked Glimp, so you won't forget me.",
+        "A little bolt had to be tightened on the outside of the ship. Sam fastened a strong rope to his suit and floated outside, into open space. All around him thousands of stars glittered, closer than ever. Very calmly he tightened the bolt, one, two, three turns. Done! For a moment he hung still, floating among the stars, and he felt so small and so happy at the same time. It was perfectly quiet and very, very beautiful.",
+        "A cheerful comet with a long glittering tail came whooshing by. First one to that planet! shouted the comet. Sam hit the gas and the Star Arrow shot forward. Together they raced past a giant planet with rings that shone like soft scarves, and past moons as round as marbles. The comet won by a whisker and laughed with a sound like a thousand little bells. Well flown, captain Sam! it called, waving its shining tail.",
+        "On the way Sam heard a soft beep. It was a little satellite that didn't know the way home anymore. It blinked its lights sadly. No worries, said Sam, I'll help you. Very carefully he nudged the little satellite back onto the right path, towards the earth. Its light began to blink happily again, beep beep, as if it were saying thank you. Sam waved it goodbye until it became a tiny little star in the distance.",
+        "Sam drifted past a field of shooting stars, which streaked by like golden lines. Make a wish, he whispered to himself, just like he always did at home. He closed his eyes and wished that everyone he loved would sleep well. When he opened his eyes again, the whole sky seemed to twinkle a little extra, as if the stars had heard his wish and winked back. It made Sam's tummy feel all warm."
+      ],
+      scenePts:[
+        "Launch: counting down, up through the clouds, the earth like a blue marble.",
+        "Weightless in the cabin: sandwich and sock float, he snaps at a drop of juice.",
+        "On the moon: jumping metres high, planting a flag with his house on it.",
+        "Green little space creature Glimp: catching stardust together, gets a glowing stone.",
+        "Spacewalk on a rope: tightening a bolt, stars everywhere.",
+        "A race with a cheerful comet past a planet with rings.",
+        "Helps a lost little satellite find its way back to earth.",
+        "Shooting stars: making a wish that everyone sleeps well."
+      ],
+      ending:"It was time to go home. Sam set course for the big blue earth, which came closer and closer. Very softly the Star Arrow descended through the clouds and landed with a little plop right by his house. Sam took off his space suit, crawled into his warm bed and put Glimp's glowing stone on his nightstand. Through the window the stars twinkled, the ones he now knew from up close. Good night, captain Sam, they whispered. And Sam fell asleep, dreaming of the moon. Sleep tight, little astronaut.",
+      endingPt:"Back to earth, a soft landing, in bed with the glowing stone. Sleep tight."},
+
+    voetbal:{name:"A football adventure",
+      intro:"Tom loved football more than anything in the world. Tonight was the big match, in a stadium full of cheering people, under a sky full of stars. Tom put on his football boots, tied the laces extra tight and ran onto the pitch. The grass was soft and the ball lay ready in the middle. He felt butterflies in his tummy, but he smiled. He was completely ready.",
+      introPt:"Tom, who loves football, plays the big match in a packed stadium under the stars.",
+      scenes:[
+        "The referee blew the whistle and the match began. Right away Tom got the ball at his feet. He dribbled forward, smooth and fast, rolling the ball from left to right. A defender tried to take it, but Tom made a feint, flicked the ball past him and ran on. The crowd cheered. His heart pounded with joy. This was exactly what he had dreamed of.",
+        "Suddenly a cheerful dog ran onto the pitch, straight for the ball. It was a fluffy dog with floppy ears, and it began juggling the ball, on its nose and on its paws! The whole stadium burst out laughing. Tom laughed so hard he almost fell over. The dog headed the ball back to Tom, wagged its tail proudly and trotted off the field, waved off by everyone.",
+        "Tom looked up and saw his best friend Max standing free. He passed the ball in one touch, hard and true, towards him. Max took the ball, glanced up, and gave it back at exactly the right moment, right in front of Tom's feet. Together! shouted Max. Thanks to that lovely teamwork Tom was suddenly all alone in front of the goal. Well spotted, shouted Tom, that's teamwork!",
+        "Then it started to rain, softly at first and then in big drops. The pitch became slippery and muddy. Tom ran, slipped and slid metres across the wet grass, right through a big puddle. Splooosh! He was covered in mud from head to toe and lay there laughing. Soon all the players were sliding too, and the whole pitch turned into the funniest mud bath ever. Nobody could stop laughing.",
+        "Penalty! The stadium went completely silent. Tom placed the ball on the spot and took a deep breath. Stay calm, he said softly to himself, just stay calm. He looked at the corner, took a run-up and shot the ball cleanly and hard into the top corner. The keeper dived, but just couldn't reach it. Goal! The stadium exploded with cheering, and Tom ran a happy lap with his arms wide.",
+        "It was almost the last minute and the score was level. Tom got the ball and knew: this is the moment. He dribbled past one defender, then another, and saw a gap. With the outside of his foot he curled the ball beautifully into the far corner. It was as if time stood still while the ball swept into the net. What a goal! His whole team jumped on top of him with joy.",
+        "After the final whistle all the players walked towards each other. Tom shook the hand of his opponent. Well played, he said kindly, and the other boy smiled and said it back. Because winning was fun, but playing a good game together was even more fun. The captain of the other team even gave Tom a high five. That's how it should be, said the referee proudly, real good sports.",
+        "The cup was held up high and gleamed in the stadium lights. Tom got to hold it, and the whole crowd sang his name. Confetti fluttered down like coloured snow. Tom looked up at the stars and thought: I'll never forget this. His cheeks ached from smiling and his legs were pleasantly tired."
+      ],
+      scenePts:[
+        "Kick-off: a clever dribble with a feint past a defender, crowd cheers.",
+        "Funny: a fluffy dog runs onto the pitch and juggles the ball.",
+        "Teamwork with best friend Max: a lovely one-two, Tom is free.",
+        "Rain and mud: all the players slide through the puddles, laughing.",
+        "Tense penalty: breathe calmly and score in the top corner.",
+        "Last minute: a beautiful curling goal into the far corner.",
+        "Sporting: shaking hands with the opponent, a high five.",
+        "The cup held high, confetti, the crowd sings his name."
+      ],
+      ending:"As the stadium lights slowly went out, Tom went home, tired and happy. He took a lovely warm shower to wash off all the mud and put on his softest pyjamas. In bed he placed his football right next to his pillow, like always. He thought a little about the beautiful goal and the laughing dog, and his eyes slowly closed. Good night, champion, whispered the wind through the window. And Tom fell asleep, dreaming of many more goals. Sleep tight, little footballer.",
+      endingPt:"Tired and happy home, a warm shower, the ball next to his pillow. Sleep tight."},
+
+    piloot:{name:"A pilot adventure",
+      intro:"Lucas was a brave young pilot, and his plane was called the Cloud Arrow. It was bright red with white wings and it gleamed in the evening sun. Lucas climbed into the cockpit, put on his headset and started the engine, which began to hum softly. Ready for take-off, he said into his microphone. He gave it throttle, rolled down the runway, faster and faster, and then the wheels lifted off the ground. He was flying!",
+      introPt:"Lucas, a brave young pilot, takes off in his red plane the Cloud Arrow.",
+      scenes:[
+        "The Cloud Arrow climbed higher and higher, right through the soft white clouds. Above the clouds it was beautiful: the sun coloured the sky orange and pink, and the clouds looked like an endless field of candy floss. Lucas leaned back contentedly. Up here, high in the air, he felt completely free. He gave a cheerful wave to a surprised seagull gliding past.",
+        "Time for a few stunts! Lucas was strapped in tight and gently pulled the control stick. The Cloud Arrow made a beautiful loop, all the way over the top, and Lucas laughed out loud. Then a calm roll to the left, and then nicely straight again. Woohoo! he shouted. The clouds spun cheerfully around him. He was so careful and so skilful that it was never scary, only super fun.",
+        "In the distance Lucas saw a beautiful rainbow stretching across the whole sky. Carefully he flew right through it. For just a moment the whole cockpit seemed to colour in red, yellow and blue, as if he were flying through a magic gateway. On the other side a little group of birds was waiting, and they flew along beside him in a neat row, as if they wanted to guide him. Lucas never felt alone up there.",
+        "But then the sky suddenly turned dark. A big storm came rolling in, with thick grey clouds and flashes of lightning. The wind began to tug at the Cloud Arrow and the plane shook back and forth. Lucas held the controls tightly and stayed very calm. Don't be afraid, he said softly to himself, just steer calmly. He flew quietly between the showers, exactly the way a real pilot does.",
+        "Suddenly the engine began to splutter. Prrt, prrt, it went, and an orange light started blinking on the dashboard. Other pilots might have been startled, but Lucas took a deep breath and stayed calm. Stay calm, he thought, I can do this. He checked all the buttons, tapped gently on the gauge and eased the engine a little softer. A moment later the Cloud Arrow was humming along just fine again. Well done, he whispered to his plane, relieved.",
+        "It was safer to go down to the ground for a bit. Below him Lucas saw a small green island with a flat, soft grassy field. I'll land there, he decided bravely. Very carefully he descended, lower and lower, his eyes fixed on the field. The wheels touched the ground, bumpity-bump across the grass, and then the Cloud Arrow came to a safe stop. Lucas had done it all by himself. What a hero!",
+        "Friendly people lived on the island, and they came running over at once. A real pilot, landed on our island! they cried. They cheered for Lucas and gave him a glass of fresh lemonade and a big piece of cake. A handy mechanic took a look at the engine, turned a screw here and there, and said with a wink: there, good as new. Lucas beamed with pride.",
+        "The weather had become calm and clear again, and the first stars began to twinkle. Lucas waved to his new friends on the island and started the engine, which hummed cheerfully once more. The Cloud Arrow rolled across the grass and lifted off gently into the lovely evening sky. Below him the lights of the island twinkled goodbye, like little stars."
+      ],
+      scenePts:[
+        "Above the clouds: sun, pink sky, clouds like candy floss, waving at a seagull.",
+        "Stunts: a loop and a roll, safely strapped in, woohoo!",
+        "Flying through a rainbow, birds fly along beside him.",
+        "Storm: lightning and wind shake the plane, Lucas steers calmly.",
+        "Engine splutters, orange light blinks: stay calm, he fixes it.",
+        "A brave emergency landing on a small green island. Safely down!",
+        "On the island: people cheer, cake, the mechanic fixes the plane.",
+        "Clear weather and stars: taking off again towards home."
+      ],
+      ending:"Under a sky full of stars Lucas flew calmly back home. The Cloud Arrow hummed contentedly and the moon showed him the way. Very softly he descended to the home runway and set the plane down without a single bump. Lucas patted the dashboard lovingly. Well flown, Cloud Arrow, he whispered. Then he walked home, crawled into his warm bed and hung his pilot's cap on the chair. He had been a real hero today. His eyes closed and he dreamed of clouds as soft as candy floss. Sleep tight, little pilot.",
+      endingPt:"Under the stars home, a soft landing, a real hero, in bed. Sleep tight."},
+
+    ridders:{name:"A knight's adventure",
+      intro:"Joris was the youngest knight in the whole kingdom. He had shining armour, a brave heart and a faithful horse named Lightning. Tonight he rode through the gate of Star Castle, ready for a real knightly adventure. He straightened his helmet, gave Lightning a pat on the neck and smiled. Brave knights were afraid of nothing, and Joris least of all.",
+      introPt:"Joris, the youngest knight, rides his horse Lightning through Star Castle.",
+      scenes:[
+        "On the great tournament field there was a joust. Joris gripped his long lance tightly and spurred Lightning on. At full gallop he charged at the target and struck it right in the middle. Bam! The whole stand cheered. Joris won the golden pennant, but what he liked most was that he bowed politely to his opponent. Well ridden, the people called, long live Sir Joris!",
+        "Behind the hill Joris heard sobbing. There sat a little dragon, no bigger than a dog, who kept accidentally sneezing fire. Atishoo, and pffft, a little flame. The other animals were afraid of him, but Joris was not. There there, he said kindly, and he gave the dragon a sip of water. The sneezing stopped. The little dragon snuggled up to him gratefully and from that moment became Joris's most loyal little friend.",
+        "In the village a foal had broken loose and was running across the square in fright. No one could catch it. Joris stepped forward calmly, held out his hand and spoke in a soft voice. The foal calmed down, sniffed his glove and let itself be led gently back to the stable. The farmer was so happy that he gave Joris a basket full of fresh apples. One was for Lightning, who gobbled it up at once.",
+        "Joris climbed the very highest tower of the castle, step after step. At the top he looked out over the whole kingdom. The sun sank slowly behind the hills and coloured everything gold and pink. The river glittered, the village rooftops glowed, and far away the sheep bleated as they walked home. How beautiful it is here, whispered Joris, as the first little stars appeared.",
+        "At the secret gate stood an old watchman with a long grey beard. Whoever solves my riddle may pass, he said. I grow bigger when you feed me, but I go out when you give me water, what am I? Joris thought hard and then smiled. A fire, he said. The watchman nodded proudly and the heavy gate slowly swung open. Cleverly done, young knight, he grumbled.",
+        "A thunderstorm rolled in, with thunder and heavy rain. The villagers were startled by the loud bangs. But Joris rode calmly around on Lightning and helped everyone safely inside, by the warm hearth. Don't be afraid, he said reassuringly, it's only a little shower, it will soon pass. And sure enough, a little later the moon was shining again, and everyone was safe and dry. The people thanked their brave knight.",
+        "In the great knights' hall there was a feast. Long tables were full of steaming soup, fresh bread and sweet honey cake. Joris sat at the head, with the little dragon on his lap and Lightning peeking in through the window. Everyone told stories of brave deeds and laughed cosily together. The warm glow of the hearth made everyone pleasantly sleepy and content."
+      ],
+      scenePts:[
+        "Joust: lance right on target, wins the golden pennant, bows politely.",
+        "A little dragon that sneezes fire: Joris helps with water, they become friends.",
+        "A loose foal in the village: Joris calms it and brings it back.",
+        "Climbing the highest tower: a view over the kingdom at sunset.",
+        "A watchman with a riddle at the gate: the answer is 'fire'.",
+        "Storm: Joris helps everyone safely inside by the warm hearth.",
+        "A feast in the knights' hall: soup, bread, honey cake and stories."
+      ],
+      ending:"When the feast was over, Joris climbed up to his tower room. He laid his armour carefully on its stand and hung his sword on the wall. The little dragon curled up at the foot of the bed and glowed softly like a night light. Through the high window the stars watched over the whole of Star Castle. Joris crawled under the warm blanket and yawned contentedly. Good night, brave knight, the wind rustled along the tower. And Joris fell asleep, dreaming of new adventures. Sleep tight, little knight.",
+      endingPt:"Tower room, armour off, the little dragon as a night light at the foot of the bed. Sleep tight."},
+
+    dinos:{name:"A dino adventure",
+      intro:"Tijn found an old, shiny clock with a secret button up in the attic. When he pressed it, everything around him began to spin, and floop, he was suddenly standing in a warm, green jungle, long, long ago. Everywhere big leaves rustled and in the distance a deep, friendly rumble sounded. Tijn looked around with wide eyes. He was in the land of the dinosaurs!",
+      introPt:"Tijn finds a magic clock and ends up in a green jungle full of dinosaurs.",
+      scenes:[
+        "In front of him stood a gigantic dinosaur with a long neck, calmly eating the leaves from the tallest trees. He was as big as a house, but his eyes looked very soft and friendly. The longneck lowered his head and carefully sniffed Tijn's hair. Tijn had to laugh and stroked the big, warm snout. Hello, big friend, he said softly. The dino rumbled contentedly in return.",
+        "Out of a bush came a little dino, no bigger than a puppy, with funny spots on its back. It looked at Tijn, squeaked cheerfully and hopped right after him. I'll call you Dotty, laughed Tijn. From that moment Dotty never left his side. Together they jumped over tree trunks and splashed through a shallow stream, while Dotty made little hops of joy.",
+        "The friendly longneck let Tijn climb onto his broad back. Very slowly and carefully the big dino walked through the jungle. From that height Tijn could see everything: glittering waterfalls, fields full of flowers and other dinosaurs grazing peacefully. It rocked gently back and forth, like a swing. Tijn held on to the neck and felt like the happiest explorer in all of prehistory.",
+        "By a mud pool Tijn heard spluttering. A young dino was stuck in the thick mud and couldn't get out. Don't be afraid, called Tijn, I'll help you! Together with the strong longneck he pulled the dino carefully, and with a big slurp it came loose. The rescued dino shook off the mud and gave Tijn a grateful little head-bump. Tijn grinned from ear to ear.",
+        "Suddenly it began to rain, with warm, big drops. Tijn and Dotty sheltered under an enormous fern leaf, as big as an umbrella. Around them other animals huddled together too, to stay dry. It was cosy and warm there, and the rain tapped softly on the leaves. Tijn stroked Dotty, who snuggled up against him contentedly. A little later the sun was shining again and everything glistened fresh and green.",
+        "Then a deep rumble sounded, and out of the trees came a big dino with strong teeth. Tijn was startled for a moment. But the big dino didn't look angry at all, only a little shy. He simply felt like playing, but because of his size nobody dared to come near him. Tijn stepped forward bravely and gave him a stroke on the nose. The big dino rumbled happily, and they became friends at once.",
+        "Tijn found a little nest with shiny dino eggs, gleaming softly in the sunlight. The mother dino looked on worriedly. I'll keep watch, said Tijn kindly. He helped tuck the eggs neatly back into the warm nest and laid soft leaves over them. The mother dino rumbled gratefully and stroked him with her snout. Tijn felt proud that he had helped the little baby dinos."
+      ],
+      scenePts:[
+        "A giant longneck dino, as big as a house, sniffs Tijn in a friendly way.",
+        "Little dino Dotty follows Tijn everywhere; together through a stream.",
+        "On the longneck's back: a view over waterfalls and flower fields.",
+        "A dino is stuck in the mud: Tijn and the longneck pull it free.",
+        "Rain shower: cosy shelter under a giant fern leaf.",
+        "A big dino with strong teeth turns out shy and sweet; a new friend.",
+        "Tucking a nest of shiny dino eggs back with the mother dino."
+      ],
+      ending:"It was time to go home. Tijn hugged Dotty tightly one more time and waved to all his big, friendly dino friends. He pressed the button on the shiny clock, and floop, there he was, safely back in his own attic. Outside it had grown dark and the stars were twinkling. Tijn crawled into his warm bed with a big smile. What an adventure, he yawned. And as he closed his eyes, he dreamed of Dotty and the warm, green jungle. Sleep tight, little explorer.",
+      endingPt:"Back to the attic with the clock, in bed, dreaming of Dotty. Sleep tight."},
+
+    piraten:{name:"A pirate adventure",
+      intro:"Captain Bas was the cheeriest pirate of all the seven seas. His ship was called the Wave Rider, with big white sails and a flag that waved in the wind. On his shoulder sat his best friend, a colourful parrot named Cracker. Tonight they set course for the secret treasure island. Full speed ahead, cried Bas cheerfully, and the Wave Rider glided out onto the glittering sea.",
+      introPt:"Captain Bas sails his ship the Wave Rider with parrot Cracker to the treasure island.",
+      scenes:[
+        "The Wave Rider sailed calmly across the smooth sea. Beside the ship cheerful dolphins leaped along through the waves, gleaming in the moonlight. Cracker the parrot squawked happily: onward, onward! Bas stood at the wheel and felt the salty wind on his face. He hummed a merry sailor's song, and the dolphins seemed to leap exactly in time. What a lovely evening at sea.",
+        "Bas unrolled the old treasure map on the table. There were waves on it, an island, and a big red cross. That's where we're headed, men, he said, pointing with his finger. Cracker landed on top of the map and nodded wisely, as if he knew exactly where it was. Together they studied the route past the rocks and the bay. The adventure could begin, and Bas grinned with anticipation.",
+        "Suddenly a strong wind picked up and dark clouds came drifting in. The waves grew high and the Wave Rider rocked back and forth. But Captain Bas stayed calm and held the wheel tightly. Stay calm, men, he cried, I'll bring us through safely! He steered calmly between the waves, and a little later the storm passed over. The sea grew smooth again, and everyone cheered for their brave captain.",
+        "At last the treasure island appeared, with white beaches and tall palm trees. The Wave Rider dropped anchor and Bas waded through the shallow, warm water to the shore. The sand was soft and golden, and colourful birds whistled in the trees. Land ahoy! squawked Cracker cheerfully. Bas planted his boot in the sand and took a deep breath. Somewhere here the treasure lay hidden.",
+        "Bas followed the map, past the crooked palm tree and beyond the big rock. Count ten paces to the west, he read aloud. There, under a little heap of sand, his spade struck something hard. It was an old wooden chest! With a pounding heart Bas lifted the lid. Inside, gold coins and shiny shells glittered, sparkling in the sun. Hooray! he cheered, we've found the treasure!",
+        "By the rocks sat a friendly mermaid on a stone, softly singing a song. She showed Bas the prettiest shells and the safest way back to his boat. A big sea turtle came swimming by and nodded kindly. Thank you for your help, said Bas politely. The mermaid gave him a glittering pearl as a keepsake, and Bas promised that he would always take good care of the sea.",
+        "Back on the Wave Rider, Bas shared the treasure fairly among the whole crew. For you, and for you, and for you, he said, because a good captain always shares. Everyone got a handful of shiny coins and a beautiful shell. The sailors cheered and Cracker danced cheerfully on the railing. Together they ate a feast of fresh fruit from the island, and no one was as happy as Captain Bas."
+      ],
+      scenePts:[
+        "Dolphins swim along in the moonlight, Bas hums a sailor's song.",
+        "Studying the treasure map: an island with a big red cross.",
+        "Storm at sea: Bas holds the wheel calmly, it passes over.",
+        "Arrival on the tropical island with white beaches and palm trees.",
+        "Digging up treasure: a chest full of gold coins and shiny shells.",
+        "A friendly mermaid and sea turtle help; Bas gets a pearl.",
+        "Sharing the treasure fairly with the whole crew, a feast."
+      ],
+      ending:"Under a sky full of stars the Wave Rider set course for home. The sea was calm and the wind blew softly in the sails. Cracker the parrot sleepily tucked his head under his wing. Captain Bas put the glittering pearl away safely and crawled into his cosy hammock below deck. The waves rocked the ship gently back and forth, like a cradle. Good night, brave captain, the sea murmured. And Bas fell contentedly asleep, dreaming of the next treasure. Sleep tight, little pirate.",
+      endingPt:"Under the stars home, in the hammock, rocked by the waves. Sleep tight."},
+
+    grappig:{name:"A funny adventure",
+      intro:"Bram was the funniest boy on the whole street. He could make anyone laugh, even the neighbour who always looked so serious. But today was a very special day, because today absolutely everything happened in the silliest way. Bram woke up, rubbed his eyes, and had no idea what a wild day was waiting for him. It started the moment he got out of bed, with his pyjamas inside out.",
+      introPt:"Bram, the funniest boy, has a day where everything happens in the silliest way.",
+      scenes:[
+        "At breakfast Bram wanted to make a pancake. He tossed it high into the air to flip it over, but he threw it just a little too hard. Floop! The pancake stuck to the ceiling, right above the table. Bram looked up with his mouth open. Then the pancake slowly let go and plopped right onto the head of his dog Waffle, who gobbled it up in one bite and wagged his tail cheerfully. Bram was in stitches.",
+        "Bram wanted to get dressed quickly, but in his hurry he pulled his jumper on over his head the wrong way, so he couldn't see a thing. He stuck two legs into one trouser leg and hopped around the room like a bunny. Boom, he tripped gently over a cushion and rolled across the floor, giggling. When he finally got his head through the right opening, his hair was sticking out in all directions. He looked in the mirror and burst out laughing.",
+        "In the living room lived a cheeky parrot named Chatterbox. That parrot really did repeat everything Bram said, but just a little sillier. Good morning, said Bram. Good morning-dumbo! squawked Chatterbox. Bram laughed and said: you're silly. You're sillier! the parrot shot back at once, and added a funny little dance on top, wobbling on one foot. Together they chatted and laughed all morning long.",
+        "Then a gigantic sneeze came on. Bram felt it tickling in his nose, higher and higher. Atishoo! The sneeze was so enormously loud that his cap flew off his head, arced through the air and landed right on top of a lamppost outside. Bram stared at it with wide eyes. Waffle the dog barked in surprise, and a passer-by even clapped for the world-record sneeze. Bram took a little bow.",
+        "Bram had made a silly invention: shoes with springs underneath. He put them on and carefully took one step. Boing! He bounced so high at once that he could see over the fence and wave hello to his neighbour. Boing, boing, boing! He bounced from the garden to the roof of the shed and back, squealing with laughter. Maybe I should add an off-button too, he hiccuped between bounces.",
+        "In the playground Bram wanted to show a magic trick. Watch closely, he said mysteriously, I'll conjure this rabbit out of my hat! He waved his magic wand, tapped the hat and cried: abracadabra! But instead of a rabbit, out jumped a surprised frog, which landed right on the teacher's head. Ribbit! Everyone, including the teacher, was doubled over laughing. Erm, that wasn't quite the plan, Bram grinned.",
+        "That evening Bram heard a soft giggling under his bed. He peeked underneath and saw two friendly eyes. It was a little, fluffy tickle monster, who wasn't scary at all, but really sweet. The little monster gently tickled Bram's toes, and Bram tickled back, laughing. Together they rolled across the floor giggling, until they were both out of breath from laughing. You're the funniest monster ever, said Bram.",
+        "When everything finally settled down a bit, Bram lay on his back on the bed, completely worn out from all the fun. His tummy ached from laughing. The tickle monster snuggled up beside him and the parrot mumbled sleepily: good night-dumbo, but now very soft and sweet. Bram smiled from ear to ear. What a day, he said, this was the silliest day ever."
+      ],
+      scenePts:[
+        "A pancake sticks to the ceiling and falls on dog Waffle's head.",
+        "Jumper on the wrong way, two legs in one trouser leg, hair everywhere.",
+        "Cheeky parrot Chatterbox repeats everything, but even sillier.",
+        "A world-record sneeze: his cap flies onto a lamppost.",
+        "Spring shoes: he bounces over the fence and the shed.",
+        "A magic trick gone wrong: a frog jumps onto the teacher's head.",
+        "A sweet tickle monster under the bed: giggling until out of breath.",
+        "Completely worn out from laughing, tummy aching with fun."
+      ],
+      ending:"Completely tired from laughing, Bram crawled under his duvet. His cheeks ached from grinning and his eyes grew heavy. Waffle the dog curled up at the foot of the bed, the tickle monster yawned softly under the bed, and Chatterbox the parrot tucked his head under his wing. Bram thought a little about the pancake on the ceiling and the frog on the teacher's head, and he chuckled. Good night, you silly, he whispered to himself. And with a big smile Bram fell asleep. Sleep tight, and have lovely silly dreams.",
+      endingPt:"Under the duvet with Waffle and the tickle monster, a last little chuckle. Sleep tight."},
+
+    raceauto:{name:"A racing adventure",
+      intro:"Finn was the youngest racing driver on the whole track, and his race car was called the Lightning Flash. It was fire-red, gleamed in the evening sun and had a big number one on the bonnet. Finn put on his helmet, clicked his seatbelt and started the engine, which began to roar loudly. Vroom! The crowd in the stands was already cheering. Ready for the start, whispered Finn with a big smile. Today he was going to race.",
+      introPt:"Finn, the youngest racing driver, climbs into his fire-red race car the Lightning Flash.",
+      scenes:[
+        "The starting lights went red, red, red, and then green! Vroom, the Lightning Flash shot forward. Finn pressed the accelerator and his car whooshed around the track, past the cheering stands. The wind whistled around his helmet. In the first corner he steered in smoothly, right on the perfect line. His heart pounded with joy. This was exactly what he loved: nice and fast, and yet safe around the corners.",
+        "Ahead of him drove a bright yellow car. Finn stayed calm and waited for the right moment. On the long straight he gave it extra gas, came alongside and overtook the yellow car neatly. Zoom! The people in the stands jumped up with excitement. Well done, Finn, crackled his team's voice over the radio. Finn grinned wide in his helmet and turned his focus to the next corner.",
+        "Time for a pit stop! Finn steered off the track, into the pit lane. His team was already waiting and got to work at once. In just a few seconds they changed all four tyres, filled up the tank and gave a thumbs up. Done! What a team, thought Finn proudly. With fresh tyres he roared back onto the track, ready to keep racing.",
+        "Right in the middle of the track sat a fat, dignified duck, calmly preening her feathers. Quack, she went, as if nothing was the matter. Finn had to laugh hard and braked carefully. Very gently he drove around her and honked in a friendly way: beep beep! The duck wasn't startled at all, waddled off the track at her leisure and stuck her beak proudly in the air. The whole crowd was in stitches.",
+        "Then it began to rain, and the track became slippery as ice. The other drivers grew careful, and so did Finn. In one corner the Lightning Flash slid sideways for a moment, but Finn stayed calm, steered into it and got the car nicely straight again. Don't be afraid, just steer calmly, he said softly to himself. Through the rain he drove on, calm and skilful, while the drops tapped softly on his helmet.",
+        "Suddenly the engine began to splutter a little, prt, prt, and an orange light blinked on his steering wheel. Finn wasn't startled. Stay calm, I can do this, he said softly. He eased off the gas for a moment, took a deep breath and listened carefully to his car. After a few seconds the engine was humming along powerfully again. Good job, Lightning Flash, whispered Finn, relieved, and he gave the wheel a little pat.",
+        "The final lap! Finn drove right behind the leader. In the very last corner he chose exactly the most beautiful line, gave it everything he had and came past on the outside. It was as if time stood still as he whooshed across the finish line. The black-and-white chequered flag waved through the air, and Finn had won! Woohoo! he shouted, while the whole circuit cheered for him."
+      ],
+      scenePts:[
+        "Start: green light, full throttle, smoothly through the first corner.",
+        "Overtaking a yellow car neatly on the long straight.",
+        "Quick pit stop: the team changes all the tyres in a flash.",
+        "Funny: a dignified duck on the track, Finn drives carefully around her.",
+        "Rain makes the track slippery: Finn stays calm and steers skilfully.",
+        "The engine splutters for a moment: stay calm, and it hums on again.",
+        "Last corner: past on the outside and first across the finish line!"
+      ],
+      ending:"On the podium Finn held the shiny gold trophy high in the air, and the confetti fluttered down like coloured snow. He shook the hands of the other drivers like a good sport. Well raced, they said to each other. Then Finn went home, lovely and tired and happy. He set his little toy race car right next to his bed, crawled under the covers and thought a little about that last beautiful corner. Good night, champion, whispered the wind. And Finn fell asleep, dreaming of new races. Sleep tight, little driver.",
+      endingPt:"Podium with the gold trophy, shaking hands like a good sport, tired and happy to bed. Sleep tight."},
+
+    superheld:{name:"A superhero adventure",
+      intro:"By day Sem was an ordinary boy, but there was a secret: as soon as the stars appeared in the sky, Sem put on his shiny blue cape and became a real superhero. With his cape he could float gently through the air, and he was as strong as ten people. But the most important thing was his big, kind heart. Tonight his cape fluttered in the wind as he looked out over the sleeping city. Time to help people.",
+      introPt:"As soon as the stars appear, ordinary boy Sem becomes a flying superhero with a blue cape.",
+      scenes:[
+        "High up in a tree Sem heard a pitiful meow. There sat a little kitten that didn't dare come down anymore. No worries, I'll help you, said Sem softly. He floated up calmly, took the kitten carefully in his arms and set it safely back with its owner. The kitten purred gratefully and crept away contentedly. It made Sem's heart feel all warm.",
+        "Sem rose up and floated high above the city. Below him thousands of little lights sparkled, like little stars on the ground. The wind blew softly through his cape and the moon shone kindly on his face. Up here, high in the air, Sem felt completely free and happy. He made a calm turn between the clouds and waved at the real stars, which seemed to twinkle back.",
+        "Sem suddenly felt a tickle in his nose. He tried to hold it back, but... atishoo! His superhero sneeze was so powerful that all the autumn leaves in the whole park swirled up into the air and then fell down like confetti. A few surprised squirrels looked around. Oops, giggled Sem, sorry about that. Afterwards he neatly helped a few leaves back into place, still chuckling.",
+        "By a lamppost stood a lost little dog whimpering softly. It didn't know the way home anymore. Sem knelt down calmly beside it and stroked it reassuringly. Come on, I'll take you home, he said kindly. With his fine superhero nose he sniffed out exactly the right way, and a little later he was standing at the right house. The little dog wagged its tail wildly with joy when its owner opened the door.",
+        "On a path a thick tree branch had broken off, lying right in the way. No one could get past. Sem rolled up his sleeves, gripped the heavy branch with both hands and lifted it carefully aside. Hup! It was easy for him, because he was as strong as ten people. Now everyone and all the little animals could get by safely again. Sem dusted off his hands and smiled contentedly.",
+        "At a dark window sat a little boy who was a bit afraid of the dark. Sem floated calmly to the window and waved in a friendly way. Don't be afraid, he whispered, the dark is just the day going to sleep for a while, and I'm watching over you. He pointed at the stars and told him that every star was a little night light. The boy smiled, felt safe and crawled calmly back into his warm bed.",
+        "At the end of the night Sem sat down on the highest rooftop, his cape wrapped around him. The city now slept peacefully, and all the people he had helped lay safely in their beds. Sem looked up at the twinkling stars and made a wish: that everyone would have lovely dreams. It made his tummy feel warm. A real superhero, he thought happily, simply likes to help."
+      ],
+      scenePts:[
+        "Rescuing a frightened kitten from a high tree.",
+        "Floating high over the sparkling city, completely free and happy.",
+        "Funny: a superhero sneeze blows all the leaves into the air.",
+        "Taking a lost little dog safely home.",
+        "Lifting a heavy branch aside with super strength so everyone can pass.",
+        "Reassuring a frightened little boy: the stars are night lights.",
+        "On the highest rooftop, making a wish that everyone dreams sweetly."
+      ],
+      ending:"When the first streaks of morning light appeared, Sem floated gently back to his own room. He hung his shiny blue cape neatly over the chair, ready for the next night. Nobody knew he was a superhero, and that was exactly the loveliest secret of all to Sem. He crawled under his warm duvet, tired but happy from all the helping. Good night, little hero, the stars whispered through the window. And Sem fell asleep with a smile. Sleep tight, brave superhero.",
+      endingPt:"Cape over the chair, the secret safe, tired and happy in bed. Sleep tight."},
+
+    jungle:{name:"A jungle adventure",
+      intro:"Daan was a real explorer, with a sturdy hat on his head and a shiny compass in his hand. Tonight he bravely set off into the green jungle, in search of adventure. Everywhere big leaves rustled, cheerful birds whistled and in the distance a waterfall murmured. Daan took a deep breath, looked at his compass and smiled. This way, he said firmly. The great jungle adventure could begin.",
+      introPt:"Daan, an explorer with a hat and compass, sets off into the green jungle.",
+      scenes:[
+        "Up in the trees above him swung a cheerful monkey named Pino. Pino jumped from branch to branch and laughingly threw a ripe banana to Daan. Plop, right into his hands! Daan laughed hard and threw the peel back in a funny way. Pino caught it deftly with his tail and did a silly dance on a branch. From that moment the monkey hopped cheerfully along with Daan, his very first jungle friend.",
+        "Daan came to a wide river with glittering water. How do I get across? he thought. Then he saw a row of flat stones poking out of the water like a little path. Carefully he stepped from stone to stone, his arms spread wide for balance. Hop, hop, hop. Pino jumped along ahead of him. On the other side Daan jumped onto dry land and cheered softly. Made it!",
+        "Behind the trees a beautiful waterfall murmured, tumbling down into a clear little lake. The drops glittered in the sunlight like a thousand tiny diamonds. Daan filled his canteen with the fresh water and took a big gulp. Delicious! Pino splashed into the little lake, laughing, and splashed Daan completely wet. Together they enjoyed the cool, lovely spot in the middle of the jungle for a while.",
+        "A little later Daan didn't know which way to go anymore. All the trees looked the same. But Daan wasn't afraid. Calmly he took out his compass and looked carefully at the needle. North is that way, he said with a nod. Step by step he followed the compass, and soon he recognised the path again. Good thing I have my compass, he smiled contentedly.",
+        "Under a big leaf Daan heard a soft squeak. There sat a little, frightened baby sloth that had fallen off its branch. Don't be afraid, said Daan softly, I'll help you. Very carefully he lifted the soft little animal and set it back on a low, safe branch. The little sloth looked at him with big, grateful eyes and waved very slowly with its paw. Daan waved back, laughing.",
+        "Then it began to rain softly, with warm, big drops tapping on the leaves. Daan and Pino sheltered under an enormous palm leaf, as big as an umbrella. It was cosy and dry there. Around them other little animals huddled together to shelter too. Daan shared his last piece of banana with Pino, and together they watched the falling rain calmly. A little later the sun was shining again.",
+        "When it grew dark, Daan made a small, cosy campfire that glowed warm and orange. He set up his little tent among the trees, with Pino snuggled right beside him. Above the jungle the first stars appeared, twinkling between the leaves. The crickets sang a soft lullaby. What a beautiful day, yawned Daan contentedly, while the little fire crackled softly."
+      ],
+      scenePts:[
+        "Cheerful monkey Pino throws a banana; they become friends at once.",
+        "Crossing a wide river on flat stones, step by step.",
+        "A beautiful waterfall: drinking fresh water and splashing about.",
+        "Lost for a moment: calmly following the compass and finding the path.",
+        "Setting a frightened baby sloth back on a safe branch.",
+        "Rain: cosy shelter under a giant palm leaf.",
+        "In the evening a cosy campfire and a tent under the stars."
+      ],
+      ending:"Deep in his warm sleeping bag in the tent, Daan listened to the soft sounds of the jungle. Pino lay curled up asleep beside him and the campfire slowly glowed out. Through the opening of the tent Daan saw the stars twinkling between the treetops. What an adventure this was, he thought with a big smile. He closed his eyes and dreamed of swinging monkeys and glittering waterfalls. Good night, brave explorer, the wind rustled through the leaves. Sleep tight, little adventurer.",
+      endingPt:"In the tent, Pino asleep beside him, stars between the trees. Sleep tight."},
+
+    robots:{name:"A robot adventure",
+      intro:"Tijmen loved tinkering, and tonight he had made something very special: his very own robot! He was called Pip, with shiny buttons, a round little head and two cheerfully blinking lights for eyes. Tijmen pressed the on-button carefully. Click. Pip hummed to life, blinked his little eyes and said in a squeaky voice: hello, friend! Tijmen grinned from ear to ear. This was going to be the best adventure ever.",
+      introPt:"Tijmen builds his own robot, Pip, with blinking lights for eyes, who comes to life.",
+      scenes:[
+        "Pip wanted to discover everything. He rolled curiously around the room, looked at the flowerpot and said: beep, plant! Then he rolled into a ball, got a fright and made a funny little sound: oei-oei-boing! Tijmen burst out laughing. Pip liked the laughing so much that he copied it right away, with a tinny little giggle: hee-hee-hee. Together they rolled around the room giggling.",
+        "Tijmen's room was a big mess. No worries, beeped Pip, I'll help! With his handy little grabber arms the robot picked up one toy after another and put everything neatly in its place. Tijmen happily joined in, and together they were done in no time. Pip made a proud little toot when the room was all tidy again. Well done, Pip, laughed Tijmen, and he gave the robot a high five. Click!",
+        "Tijmen grabbed a ball and together they went to play football in the garden. Pip rolled after it eagerly on his little wheels, but he accidentally kicked the ball far too hard, high over the fence. Oops, beeped Pip sheepishly. But the kind neighbour threw the ball back, laughing. After that they practised calmly together, and Pip made the funniest little cheer when he finally scored a goal.",
+        "Then it started to rain. Oh no, robots don't much like water! Quickly Tijmen and Pip held a big umbrella over their heads and ran inside, laughing. Pip shook a few drops off himself and beeped: brrr, dry is better! Inside they drank warm hot chocolate, well, Tijmen did, and Pip pretended along cosily, with a contented hum. Outside the rain tapped softly on the window.",
+        "Suddenly Pip started acting a bit funny. His lights blinked out of order and he said: beep-bardoodle-pancake! Tijmen wasn't startled, but calmly picked up his screwdriver. Don't be afraid, I'll make you better, he said softly. Very carefully he tightened a loose screw. Click. At once Pip's little eyes blinked normally again, and he beeped happily: thank you, friend! Tijmen was as proud as a real robot doctor.",
+        "In the evening Tijmen and Pip sat together by the window to look at the stars. With his lights Pip could make exactly the same constellations on the ceiling, small and glittering. How beautiful, whispered Tijmen. Look, that star there looks just like you, he said, pointing at the brightest one. Pip hummed softly and happily. It was a calm, warm moment, together with his best robot friend.",
+        "It was time to go to sleep. Pip yawned with a funny little beep, as if even a robot could get tired. Tijmen gently set him into soft sleep mode. Pip's lights went very soft and glowed warmly, just like a little night light. Good night, Pip, whispered Tijmen. Good night, friend, Pip beeped very softly back, and his humming slowly grew calm and still."
+      ],
+      scenePts:[
+        "Pip explores the room and makes funny sounds; giggling together.",
+        "Tidying the messy room together with Pip's handy grabber arms.",
+        "Football: Pip kicks the ball over the fence and later scores anyway.",
+        "Rain: robots don't like water, quickly inside with the umbrella.",
+        "Pip glitches for a moment: Tijmen calmly tightens a screw and fixes him.",
+        "Looking at the stars together; Pip makes constellations on the ceiling.",
+        "Sleep mode: Pip's lights glow softly like a night light."
+      ],
+      ending:"Tijmen crawled into his warm bed, with Pip humming calmly on the nightstand beside him. The robot's soft lights glowed warmly in the dark, like a sweet little night light watching over him. What a lovely day they had had together, full of laughing, football and stargazing. Tijmen closed his eyes and smiled. Good night, Pip, he whispered once more. And as the robot hummed very softly on, Tijmen fell asleep contentedly, dreaming of new adventures together. Sleep tight, little inventor.",
+      endingPt:"In bed with Pip humming softly on the nightstand as a night light. Sleep tight."},
+
+    tshirt:{name:"The boy who became a t-shirt",
+      intro:"On a silly morning Joep woke up and noticed something very strange: he had turned into a soft, light-blue t-shirt! He couldn't walk anymore, couldn't run and couldn't grab anything. He could only whisper very softly and lie there nice and floppy. Joep wasn't frightened by it; in fact it felt wonderfully calm. And then a big, friendly old man came along, Grandpa Bear, with strong arms and a warm smile. What a special t-shirt, he said softly, and he picked Joep up very carefully.",
+      introPt:"Joep wakes up as a soft t-shirt and can't do anything; the strong, kind Grandpa Bear picks him up carefully.",
+      scenes:[
+        "Grandpa Bear lifted the soft t-shirt very carefully and held Joep against his warm chest. Joep didn't have to do anything at all; he simply let himself be carried. From up so high he could see everything: the treetops, the rooftops and the birds. Grandpa Bear's strong arms rocked gently with every step. Joep felt small and safe at the same time. So lovely, he thought, just to be carried by someone so kind and strong.",
+        "Outside a playful wind suddenly picked up, tugging and plucking at the t-shirt. Whoosh! Joep flapped wildly back and forth like a flag, and he had to giggle hard. But strong Grandpa Bear held him tight and safe with his big hands. Don't be afraid, I won't let go of you, laughed Grandpa. The wind blew one more teasing puff and then gave up. Joep hung calm and content in the warm arms again.",
+        "Grandpa Bear carried Joep to a sunny meadow and laid him down very gently on the warm grass, like a lovely little blanket. The sun shone warmly on the soft t-shirt and it made Joep feel cosy and sleepy. A few cheerful little birds came and sat on him and chirped a song. Joep couldn't stroke them, but he didn't need to; he simply enjoyed it. How peaceful and lovely it is here, he whispered in the sunshine.",
+        "Out of the grass came a little, fluffy kitten, who saw the soft t-shirt lying there. Carefully the kitten crept on top of Joep and curled up cosily. Joep couldn't move, but he loved keeping the little kitten so nice and warm. The kitten purred contentedly, prrr, prrr. Grandpa Bear watched with a smile. You see, he said softly, even when you can't do anything, you can still mean something kind.",
+        "The t-shirt had got a little dusty, so Grandpa Bear washed Joep very gently in a clear, warm stream. Bloop, bloop, went the bubbles, and Joep had to laugh at the ticklish feeling of the bubbling water. Then Grandpa wrung him out very carefully, drip, drip, and hung him to dry in the warm sun on a branch. Joep fluttered softly in the breeze, clean and fresh, smelling lovely of sun and summer.",
+        "As the sun slowly set, Grandpa Bear folded the soft t-shirt very neatly and tucked Joep safely into the big, warm pocket of his coat. It was cosy and dark and lovely and soft in there. With every step Grandpa took, Joep rocked along, bumpity-bump, like in a little cradle. He heard Grandpa's calm humming as he softly hummed a tune. Joep felt so safe and snug that his little eyes were already beginning to close.",
+        "At home Grandpa Bear laid the soft t-shirt on a big, soft cushion, right by the warm, crackling hearth. The glow of the fire made everything orange and cosy. Grandpa tucked Joep in with a small, warm blanket and stayed sitting calmly beside him. You don't have to do anything at all tonight, he said softly, I'm watching over you. Joep sighed happily. How lovely, he thought, just to be allowed to rest while someone strong and kind watches over you."
+      ],
+      scenePts:[
+        "Grandpa Bear carries Joep against his warm chest; from up high he sees everything, safely rocked.",
+        "Funny: the wind makes the t-shirt flap like a flag, but Grandpa holds tight.",
+        "In a sunny meadow Joep lies like a blanket in the grass; birds sing.",
+        "A fluffy kitten creeps onto the t-shirt; Joep keeps it nice and warm.",
+        "Grandpa gently washes Joep in a warm stream and hangs him to dry in the sun.",
+        "Folded into Grandpa's warm coat pocket on the way home, gently rocking with each step.",
+        "Home by the crackling hearth, tucked in; Grandpa watches and Joep may simply rest."
+      ],
+      ending:"Very carefully Grandpa Bear carried the soft t-shirt upstairs, to the softest little bed there was. He laid Joep on a downy pillow and tucked him in warm under a thick blanket. Sleep well, Grandpa whispered in his warm voice, I'll stay close by. Joep didn't have to do anything anymore; no running, no doing, just lying there safe and warm. And who knows, maybe tomorrow you'll be an ordinary boy again. Joep's little eyes closed and he felt completely safe and snug. Sleep tight, dear little boy.",
+      endingPt:"Carried upstairs, tucked into the softest bed; safe and warm. Sleep tight."}
+  }};
+
+  var papaStoryI18n={en:{title:"The story dad forgot",
+    text:"Once upon a time there was a dad who told stories every evening. He made up the silliest adventures, just out of his head, while his eyes twinkled. But one evening the dad was very, very tired, so tired that the words in his head had fallen asleep before he could tell them. I'm sorry, he said softly, I can't manage it tonight. Then something special happened. A little star in the sky had been listening along all those evenings, every single one. And the little star knew all of dad's stories by heart, word for word. It let its light slip in through the window, right up close to the child's ear. I'll tell the rest, whispered the star. And so the little star told the story that dad would otherwise have told, with the same warm voice in the child's heart. Because you know, a story never really disappears. It just waits, in the stars, in the moon, and in all the people who love you. And even when dad is too tired, or when you go to bed a little too late, there is always someone awake to give you a story. The star shone one more time extra brightly, just for you. Sleep well, whispered the star. Together we'll watch over you. And the child smiled, with dad's voice still softly glowing on in his dreams. Good night. See you tomorrow.",
+    points:["Dad is too tired one evening to read a story.","A little star in the sky has listened to all of dad's stories and knows them by heart.","The little star softly tells the story on, with dad's warm voice.","A story never disappears: it waits in the stars, the moon and in everyone who loves you.","There is always someone awake watching over you. Good night."]}};
+
+  function emojiFor(k){ return k==="verras"?"🎲":themes[k].em; }
+  function getTheme(k){ if(lang==="nl")return themes[k]; var s=STORIES[lang][k]; return {em:themes[k].em,name:s.name,intro:s.intro,introPt:s.introPt,scenes:s.scenes,scenePts:s.scenePts,ending:s.ending,endingPt:s.endingPt}; }
+  function af(k,seg){ return audioBase+k+"-"+seg+(lang==="nl"?"":"-"+lang)+".mp3"; }
+  function papaCur(){ if(lang==="nl")return papaStory; var p=papaStoryI18n[lang]; return {em:papaStory.em,title:p.title,text:p.text,points:p.points}; }
+  function papaFile(){ return audioBase+"papa"+(lang==="nl"?"":"-"+lang)+".mp3"; }
+
+  function applyLang(){
+    var U=UI[lang];
+    var subEl=document.querySelector(".topline .sub"); if(subEl)subEl.textContent=U.sub;
+    var labels=document.querySelectorAll("#chooser .label"); if(labels[0])labels[0].textContent=U.l1; if(labels[1])labels[1].textContent=U.l2;
+    var sh=document.querySelector(".slidehint"); if(sh)sh.textContent=U.slidehint;
+    goBtn.innerHTML='<span class="em">✨</span> '+U.go;
+    specialBtn.innerHTML='<span class="em">💛</span> '+U.special;
+    back.innerHTML='<span class="em">←</span> '+U.back;
+    var mb=document.querySelectorAll("#modes .mode-btn");
+    if(mb[0])mb[0].innerHTML='<span class="em">🔊</span> '+U.mListen;
+    if(mb[1])mb[1].innerHTML='<span class="em">📖</span> '+U.mSelf;
+    if(mb[2])mb[2].innerHTML='<span class="em">📝</span> '+U.mKey;
+    var tl=document.querySelector(".controls label"); if(tl)tl.textContent=U.tempo;
+    if(speedSel.options[0])speedSel.options[0].textContent=U.spCalm;
+    if(speedSel.options[1])speedSel.options[1].textContent=U.spNorm;
+    if(speedSel.options[2])speedSel.options[2].textContent=U.spFast;
+    var vb=document.querySelector(".voice-badge"); if(vb)vb.textContent=U.voice;
+    if(zelfHint)zelfHint.textContent=U.zelfHint;
+    var ph=document.querySelector("#points .pts-hint"); if(ph)ph.textContent=U.ptsHint;
+    var ft=document.querySelector(".foot"); if(ft)ft.textContent=U.foot;
+    themeBtns.forEach(function(b){ var k=b.getAttribute("data-theme"); b.innerHTML='<span class="em">'+emojiFor(k)+'</span> '+U.pills[k]; });
+    if(!playing){ toggleEm.textContent="▶️"; toggleText.textContent=U.play; }
+    minOut.textContent=fmtDuur(parseInt(slider.value,10));
+  }
+
   var chooser=document.getElementById("chooser");
   var reader=document.getElementById("reader");
   var rTitle=document.getElementById("rTitle");
@@ -751,31 +1128,31 @@
   audioEl.addEventListener("error",function(){
     if(playing){
       playing=false; pausedMid=false;
-      toggleEm.textContent="▶️"; toggleText.textContent="Voorlezen";
-      noteEl.textContent="Dit verhaaltje is nog niet in papa's stem klaar. Kies hierboven “Papa leest voor”, of probeer een ander onderwerp.";
+      toggleEm.textContent="▶️"; toggleText.textContent=UI[lang].play;
+      noteEl.textContent=UI[lang].notReady;
     }
   });
 
   function play(){
     if(!segs.length)return;
     playing=true; noteEl.textContent="";
-    toggleEm.textContent="⏸️"; toggleText.textContent="Pauze";
+    toggleEm.textContent="⏸️"; toggleText.textContent=UI[lang].pause;
     if(pausedMid && audioEl.src){ pausedMid=false; setRate(); var p=audioEl.play(); if(p&&p.catch){ p.catch(function(){}); } }
     else { if(ai>=segs.length)ai=0; playSeg(ai); }
   }
   function pause(){
     playing=false; pausedMid=true; try{audioEl.pause();}catch(e){}
-    toggleEm.textContent="▶️"; toggleText.textContent="Verder lezen";
+    toggleEm.textContent="▶️"; toggleText.textContent=UI[lang].resume;
   }
   function finish(){
     playing=false; pausedMid=false; try{audioEl.pause();}catch(e){}
     ai=0; highlight(-1);
-    toggleEm.textContent="▶️"; toggleText.textContent="Nog een keer";
+    toggleEm.textContent="▶️"; toggleText.textContent=UI[lang].again;
   }
   function stop(){
     playing=false; pausedMid=false; try{audioEl.pause();}catch(e){}
     ai=0;
-    toggleEm.textContent="▶️"; toggleText.textContent="Voorlezen";
+    toggleEm.textContent="▶️"; toggleText.textContent=UI[lang].play;
   }
 
   goBtn.addEventListener("click",function(){
@@ -784,15 +1161,16 @@
     var mins=parseInt(slider.value,10);
     var targetWords=mins*WPM;
     var MINCHAIN=Math.round(2.2*WPM);
+    var U=UI[lang];
     var segArr=[], pointsArr=[], used=0, count=0, curKey=firstKey;
     while(count<14){
-      var t=themes[curKey];
+      var t=getTheme(curKey);
       var remMin=(targetWords-used)/WPM;
       var ind=pickIndices(t, count===0?mins:remMin);
       var segKeys=["intro"].concat(ind).concat(["ending"]);
       segKeys.forEach(function(k){
         var text=(k==="intro")?t.intro:((k==="ending")?t.ending:t.scenes[k]);
-        segArr.push({ text:text, file:audioBase+curKey+"-"+k+".mp3" });
+        segArr.push({ text:text, file:af(curKey,k) });
         used+=wc(text);
       });
       pointsArr.push(t.introPt);
@@ -802,15 +1180,15 @@
       if(targetWords-used < MINCHAIN) break;
       curKey=randKey(curKey);
     }
-    var first=themes[firstKey];
-    var title=(count>1)?"Slaapverhaaltjes achter elkaar":first.name;
+    var first=getTheme(firstKey);
+    var title=(count>1)?U.marathon:first.name;
     var em=(count>1)?"🌙":(surprise?"🎲":first.em);
-    var sub=(surprise?"Verrassing! ":"")+"ongeveer "+fmtDuur(mins)+(count>1?(" · "+count+" verhaaltjes"):"");
+    var sub=(surprise?U.surprise:"")+U.about+" "+fmtDuur(mins)+(count>1?(" · "+count+" "+U.stories):"");
     openReader(title,sub,em,segArr,pointsArr);
   });
   specialBtn.addEventListener("click",function(){
-    openReader(papaStory.title,"Een verhaaltje speciaal voor jou",papaStory.em,
-      [{text:papaStory.text, file:audioBase+"papa.mp3"}], papaStory.points);
+    var p=papaCur();
+    openReader(p.title,UI[lang].specialSub,p.em,[{text:p.text, file:papaFile()}], p.points);
   });
 
   toggle.addEventListener("click",function(){ if(playing){ pause(); } else { play(); } });
@@ -818,6 +1196,19 @@
   back.addEventListener("click",function(){ stop(); reader.style.display="none"; chooser.style.display="block"; window.scrollTo({top:0,behavior:"smooth"}); });
   speedSel.addEventListener("change",setRate);
   window.addEventListener("beforeunload",function(){ try{audioEl.pause();}catch(e){} });
+
+  var langBtns=document.querySelectorAll("#langbar .langbtn");
+  langBtns.forEach(function(b){
+    b.addEventListener("click",function(){
+      langBtns.forEach(function(x){ x.classList.remove("sel"); });
+      b.classList.add("sel");
+      lang=b.getAttribute("data-lang");
+      stop();
+      reader.style.display="none"; chooser.style.display="block";
+      applyLang();
+    });
+  });
+  applyLang();
 })();
 </script>
 </body>
