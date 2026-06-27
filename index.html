@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>De Verhaaltjesmachine</title>
+<meta name="theme-color" content="#140e30" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Verhaaltjes" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    font-family:'Quicksand',system-ui,-apple-system,sans-serif;
+    color:#f3f1ff;
+    background:radial-gradient(130% 100% at 50% 0%, #2a1f57 0%, #181138 45%, #0a0720 100%);
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+  .stars i{position:absolute;border-radius:50%;background:#fff;animation:tw 4s infinite ease-in-out;}
+  @keyframes tw{0%,100%{opacity:.15;}50%{opacity:.95;}}
+  .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:30px 20px 70px;}
+
+  .top{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+  .moon{width:54px;height:54px;border-radius:50%;flex:none;
+    background:radial-gradient(circle at 34% 32%, #fff7df 0%, #ffe6a0 55%, #ffd16a 100%);
+    box-shadow:0 0 34px rgba(255,213,120,.55), inset -8px -8px 14px rgba(210,150,40,.35);}
+  h1{font-size:30px;font-weight:700;margin:0;letter-spacing:.3px;}
+  .sub{margin:2px 0 0;font-size:15px;color:#c5bff0;font-weight:500;}
+
+  .label{font-size:17px;font-weight:600;margin:0 0 12px;color:#efeaff;}
+  .row{display:flex;flex-wrap:wrap;gap:11px;margin-bottom:30px;}
+
+  .pill{font-family:inherit;font-size:16px;font-weight:600;color:#efeaff;cursor:pointer;
+    background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.16);border-radius:16px;
+    padding:12px 16px;display:inline-flex;align-items:center;gap:9px;transition:.15s;}
+  .pill:hover{transform:translateY(-2px);background:rgba(255,255,255,.13);}
+  .pill:active{transform:scale(.97);}
+  .pill.sel{border-color:#ffd97a;background:rgba(255,217,122,.20);color:#fff;
+    box-shadow:0 0 18px rgba(255,213,120,.25);}
+  .pill .em{font-size:20px;line-height:1;}
+
+  .slider-wrap{display:flex;align-items:center;gap:16px;max-width:520px;margin-bottom:34px;}
+  input[type=range]{flex:1;height:8px;border-radius:8px;-webkit-appearance:none;appearance:none;
+    background:rgba(255,255,255,.16);outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;
+    border-radius:50%;background:radial-gradient(circle at 35% 32%,#fff7df,#ffd16a);cursor:pointer;
+    box-shadow:0 0 12px rgba(255,213,120,.6);border:none;}
+  input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;border:none;
+    background:radial-gradient(circle at 35% 32%,#fff7df,#ffd16a);cursor:pointer;box-shadow:0 0 12px rgba(255,213,120,.6);}
+  .mins{font-size:18px;font-weight:700;min-width:92px;text-align:right;color:#ffe6a0;}
+
+  .go{font-family:inherit;font-size:19px;font-weight:700;cursor:pointer;color:#3a2a00;
+    background:linear-gradient(180deg,#ffe49a,#f6b94b);border:none;border-radius:18px;
+    padding:16px 28px;display:inline-flex;align-items:center;gap:11px;
+    box-shadow:0 8px 24px rgba(255,190,70,.3);transition:.15s;}
+  .go:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,190,70,.4);}
+  .go:active{transform:scale(.98);}
+  .go .em{font-size:22px;}
+
+  .divider{margin-top:30px;padding-top:24px;border-top:1px solid rgba(255,255,255,.13);}
+  .btn{font-family:inherit;font-size:15px;font-weight:600;color:#efeaff;cursor:pointer;
+    background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);border-radius:14px;
+    padding:11px 17px;display:inline-flex;align-items:center;gap:9px;transition:.15s;}
+  .btn:hover{background:rgba(255,255,255,.14);transform:translateY(-1px);}
+  .btn:active{transform:scale(.97);}
+  .btn .em{font-size:18px;}
+
+  #reader{display:none;}
+  .r-head{display:flex;align-items:center;gap:14px;margin:18px 0 22px;}
+  .r-em{width:54px;height:54px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:28px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.16);}
+  .r-title{font-size:22px;font-weight:700;margin:0;}
+  .r-sub{font-size:14px;font-weight:500;color:#c5bff0;margin:2px 0 0;}
+
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:11px;margin-bottom:26px;}
+  .controls label{font-size:14px;font-weight:600;color:#c5bff0;margin-left:4px;}
+  select{font-family:inherit;font-size:15px;font-weight:600;color:#fff;cursor:pointer;
+    background:rgba(255,255,255,.10);border:1.5px solid rgba(255,255,255,.2);border-radius:12px;padding:9px 11px;}
+  select option{color:#1a1430;}
+
+  #text{font-size:20px;line-height:1.95;font-weight:500;color:#efeaff;}
+  .sent{transition:background .25s ease;border-radius:7px;padding:1px 2px;}
+  .sent.on{background:rgba(255,217,122,.30);box-shadow:0 0 0 3px rgba(255,217,122,.30);color:#fff;}
+  .note{font-size:14px;color:#a39ce0;margin-top:26px;}
+  .foot{text-align:center;font-size:13px;color:#7d77b5;margin-top:46px;}
+
+  @media(max-width:480px){
+    h1{font-size:25px;} #text{font-size:19px;} .pill{font-size:15px;padding:11px 14px;}
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+<div class="wrap">
+
+  <div class="top">
+    <div class="moon"></div>
+    <div>
+      <h1>De Verhaaltjesmachine</h1>
+      <p class="sub">Stel je eigen avontuur samen</p>
+    </div>
+  </div>
+
+  <div id="chooser">
+    <p class="label">1. Waar gaat je avontuur over?</p>
+    <div class="row" id="theme">
+      <button class="pill" data-theme="astronaut"><span class="em">🚀</span> Astronaut</button>
+      <button class="pill" data-theme="voetbal"><span class="em">⚽</span> Voetbal</button>
+      <button class="pill" data-theme="piloot"><span class="em">✈️</span> Piloot</button>
+      <button class="pill" data-theme="ridders"><span class="em">⚔️</span> Ridders</button>
+      <button class="pill" data-theme="dinos"><span class="em">🦕</span> Dino's</button>
+      <button class="pill" data-theme="piraten"><span class="em">🏴‍☠️</span> Piraten</button>
+      <button class="pill" data-theme="grappig"><span class="em">😄</span> Grappig</button>
+      <button class="pill" data-theme="verras"><span class="em">🎲</span> Verras me</button>
+    </div>
+
+    <p class="label">2. Hoe lang mag het duren?</p>
+    <div class="slider-wrap">
+      <input type="range" min="3" max="15" value="6" step="1" id="minutes" />
+      <span class="mins"><span id="minOut">6</span> min</span>
+    </div>
+
+    <button class="go" id="go"><span class="em">✨</span> Vertel mijn verhaaltje</button>
+
+    <div class="divider">
+      <button class="btn" id="special"><span class="em">💛</span> Het verhaaltje voor als papa moe is</button>
+    </div>
+  </div>
+
+  <div id="reader">
+    <button class="btn" id="back"><span class="em">←</span> Andere kiezen</button>
+    <div class="r-head">
+      <div class="r-em" id="rEm">🚀</div>
+      <div>
+        <p class="r-title" id="rTitle"></p>
+        <p class="r-sub" id="rSub"></p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="toggle"><span class="em" id="toggleEm">▶️</span><span id="toggleText">Voorlezen</span></button>
+      <button class="btn" id="restart" aria-label="Opnieuw beginnen"><span class="em">🔁</span></button>
+      <label for="speed">Tempo</label>
+      <select id="speed">
+        <option value="0.82">Rustig</option>
+        <option value="0.95" selected>Gewoon</option>
+        <option value="1.1">Vlot</option>
+      </select>
+      <label for="voice">Stem</label>
+      <select id="voice"></select>
+    </div>
+
+    <p id="text"></p>
+    <p class="note" id="note"></p>
+  </div>
+
+  <p class="foot">🌙 Welterusten — gemaakt met liefde 💛</p>
+</div>
+
+<script>
+(function(){
+  var sky=document.getElementById("stars");
+  for(var s=0;s<70;s++){
+    var st=document.createElement("i");
+    var size=Math.random()*2+1;
+    st.style.width=size+"px"; st.style.height=size+"px";
+    st.style.left=(Math.random()*100)+"%"; st.style.top=(Math.random()*100)+"%";
+    st.style.animationDelay=(Math.random()*4)+"s";
+    sky.appendChild(st);
+  }
+
+  var WPM=105;
+
+  var themes={
+    astronaut:{name:"Een astronautenavontuur",em:"🚀",
+      intro:"Sam was de jongste astronaut van de hele wereld. Vanavond mocht hij voor het eerst helemaal alleen de ruimte in, met zijn glimmende ruimteschip de Sterrenpijl. Hij trok zijn witte ruimtepak aan, zette zijn helm op en klom in de stoel. Op het scherm verschenen de woorden: klaar voor vertrek, kapitein Sam. Hij haalde diep adem en glimlachte breed.",
+      scenes:[
+        "Drie, twee, één, start! De motoren brulden en de Sterrenpijl schoot omhoog. Sam werd zacht in zijn stoel gedrukt terwijl het schip door de witte wolken brak. Toen werd het ineens heel stil. Door het raampje zag hij de aarde, een grote blauwe knikker met witte wolkenslierten eromheen. Zo mooi had hij het nog nooit gezien. Wauw, fluisterde Sam, en hij zwaaide naar alle mensen daar beneden die nu lekker gingen slapen.",
+        "In de ruimte was alles gewichtloos, en dat was lachen. Sams boterham zweefde door de cabine, zijn potlood tolde rond en zijn ene sok dreef vrolijk voorbij zijn neus. Sam maakte zijn gordel los en zweefde mee, met zijn armen wijd als een vogel. Hij liet een druppel appelsap los, die als een glimmend balletje door de lucht danste. Sam hapte ernaar, slok, en hij moest zo lachen dat er nog drie druppeltjes ontsnapten.",
+        "De Sterrenpijl landde zachtjes op de maan, met een klein plofje in het grijze maanstof. Sam stapte naar buiten en zette de allereerste stap. Boing! Op de maan was hij zo licht dat hij metershoog kon springen. Hij sprong en sprong, hoger dan een huis, en lachte de hele tijd. Toen plantte hij een klein vlaggetje in de grond, met daarop een tekening van zijn eigen huis. Nu was er een stukje van thuis, helemaal op de maan.",
+        "Plotseling zag Sam iets kleins en groens achter een rots vandaan gluren. Het was een vriendelijk ruimtewezentje met grote ronde ogen, dat Glimp heette. Hallo, zei Glimp met een piepstemmetje, kom je spelen? Samen speelden ze sterrenstof-vangen, waarbij ze glinsterende stofjes uit de lucht plukten die opgloeiden in hun handen. Glimp gaf Sam een klein, warm steentje dat zachtjes licht gaf. Voor jou, piepte Glimp, zodat je me niet vergeet.",
+        "Er moest een klein boutje worden vastgedraaid aan de buitenkant van het schip. Sam maakte een stevig touw aan zijn pak vast en zweefde naar buiten, de open ruimte in. Om hem heen glinsterden duizenden sterren, dichterbij dan ooit. Heel rustig draaide hij de bout vast, een, twee, drie slagen. Klaar! Even bleef hij stil hangen, zwevend tussen de sterren, en hij voelde zich zo klein en zo gelukkig tegelijk. Het was muisstil en heel erg mooi.",
+        "Een vrolijke komeet met een lange glinsterende staart kwam langszoeven. Wie het eerst bij die planeet is! riep de komeet. Sam gaf gas en de Sterrenpijl schoot vooruit. Samen raceten ze langs een reusachtige planeet met ringen die glommen als zachte sjaals, en langs manen zo rond als knikkers. De komeet won met een haartje en lachte met een schaterend geluid van duizend belletjes. Goed gevlogen, kapitein Sam! riep hij, en hij zwaaide met zijn stralende staart.",
+        "Onderweg hoorde Sam een zacht piepje. Het was een klein satellietje dat de weg naar huis niet meer wist. Het knipperde verdrietig met zijn lampjes. Geen zorgen, zei Sam, ik help je. Heel voorzichtig duwde hij het satellietje terug op het goede pad, richting de aarde. Het lampje begon weer blij te knipperen, bliep bliep, alsof het dankjewel zei. Sam zwaaide het na tot het een klein sterretje in de verte werd.",
+        "Sam dreef langs een veld van vallende sterren, die als gouden streepjes voorbijschoten. Doe een wens, fluisterde hij tegen zichzelf, net zoals hij thuis altijd deed. Hij sloot zijn ogen en wenste dat iedereen die hij liefhad lekker zou slapen. Toen hij zijn ogen weer opende, leek de hele hemel even extra te twinkelen, alsof de sterren zijn wens hadden gehoord en terugknipoogden. Sams buik werd er helemaal warm van."
+      ],
+      ending:"Het werd tijd om naar huis te gaan. Sam zette koers naar de grote blauwe aarde, die steeds dichterbij kwam. Heel zachtjes daalde de Sterrenpijl door de wolken en landde met een klein plofje precies bij zijn huis. Sam trok zijn ruimtepak uit, kroop in zijn warme bed en legde het gloeiende steentje van Glimp op zijn nachtkastje. Door het raam twinkelden de sterren, die hij nu van heel dichtbij kende. Welterusten, kapitein Sam, fluisterden ze. En Sam viel in slaap, dromend van de maan. Slaap zacht, kleine astronaut."},
+
+    voetbal:{name:"Een voetbalavontuur",em:"⚽",
+      intro:"Tom hield meer van voetbal dan van wat dan ook. Vanavond was het zover: de grote wedstrijd, in een stadion vol juichende mensen, onder een hemel vol sterren. Tom trok zijn voetbalschoenen aan, strikte de veters extra stevig en rende het veld op. Het gras was zacht en de bal lag klaar in het midden. Hij voelde de kriebels in zijn buik, maar hij glimlachte. Hij was er helemaal klaar voor.",
+      scenes:[
+        "De scheidsrechter floot en de wedstrijd begon. Meteen kreeg Tom de bal aan zijn voet. Hij dribbelde naar voren, soepel en snel, en liet de bal van links naar rechts rollen. Een verdediger probeerde hem af te pakken, maar Tom maakte een schijnbeweging, wipte de bal erlangs en rende door. Het publiek juichte. Zijn hart bonsde van plezier. Dit was precies waar hij van droomde.",
+        "Ineens rende er een vrolijke hond het veld op, recht op de bal af. Het was een wollige hond met flaporen, en die begon doodleuk met de bal te jongleren, op zijn neus en op zijn pootjes! Het hele stadion lag dubbel van het lachen. Tom moest zo hard lachen dat hij bijna omviel. De hond gaf de bal met een kopje terug aan Tom, kwispelde trots en draafde het veld weer af, nagezwaaid door iedereen.",
+        "Tom keek op en zag zijn beste vriend Max vrijstaan. Hij speelde de bal in één keer hard en zuiver naar hem toe. Max nam de bal mee, keek even op, en gaf hem precies op het juiste moment weer terug, recht voor Toms voeten. Samen! riep Max. Door dat mooie samenspel stond Tom ineens helemaal vrij voor het doel. Goed gezien, riep Tom, dat is teamwork!",
+        "Toen begon het te regenen, eerst zachtjes en daarna met dikke druppels. Het veld werd glad en modderig. Tom rende, gleed uit en schoof meters door over het natte gras, recht door een grote plas. Spettttsj! Hij zat onder de modder van top tot teen en lag te schateren. Al snel gleden alle spelers mee, en het hele veld veranderde in het grappigste modderbad ooit. Niemand kon ophouden met lachen.",
+        "Penalty! Het werd doodstil in het stadion. Tom legde de bal op de stip en haalde diep adem. Rustig, zei hij zacht tegen zichzelf, gewoon rustig blijven. Hij keek naar de hoek, nam een aanloop en schoot de bal zuiver en hard in de bovenhoek. De keeper dook, maar kon er net niet bij. Doelpunt! Het stadion ontplofte van het gejuich, en Tom rende met zijn armen wijd een rondje van geluk.",
+        "Het was bijna de laatste minuut en de stand was gelijk. Tom kreeg de bal en wist: dit is het moment. Hij dribbelde langs één verdediger, dan langs nog één, en zag een gaatje. Met de buitenkant van zijn voet krulde hij de bal prachtig in de verre hoek. Het leek wel of de tijd even stilstond terwijl de bal het net in zoefde. Wat een doelpunt! Zijn hele team sprong bovenop hem van blijdschap.",
+        "Na het laatste fluitsignaal liepen alle spelers naar elkaar toe. Tom schudde de hand van de tegenstander. Goed gespeeld, zei hij vriendelijk, en de ander lachte en zei het terug. Want winnen was leuk, maar samen een mooi potje spelen was nog veel leuker. De aanvoerder van het andere team gaf Tom zelfs een high five. Zo hoort het, zei de scheidsrechter trots, echte sportievelingen.",
+        "De beker werd omhoog gehouden en glom in het licht van het stadion. Tom mocht hem vasthouden, en het hele publiek zong zijn naam. Confetti dwarrelde naar beneden als gekleurde sneeuw. Tom keek omhoog naar de sterren en dacht: dit vergeet ik nooit meer. Zijn wangen deden pijn van het lachen en zijn benen waren heerlijk moe."
+      ],
+      ending:"Toen de lichten van het stadion langzaam uitgingen, ging Tom naar huis, moe en gelukkig. Hij nam een lekkere warme douche om alle modder eraf te spoelen en trok zijn zachtste pyjama aan. In bed legde hij zijn voetbal vlak naast zijn kussen, zoals altijd. Hij dacht nog even na over het mooie doelpunt en de lachende hond, en zijn ogen vielen langzaam dicht. Welterusten, kampioen, fluisterde de wind door het raam. En Tom viel in slaap, dromend van nog veel meer doelpunten. Slaap zacht, kleine voetballer."},
+
+    piloot:{name:"Een pilotenavontuur",em:"✈️",
+      intro:"Lucas was een dappere jonge piloot, en zijn vliegtuig heette de Wolkenpijl. Het was helderrood met witte vleugels en het glom in de avondzon. Lucas klom in de cockpit, zette zijn koptelefoon op en startte de motor, die zachtjes begon te brommen. Klaar voor vertrek, zei hij in zijn microfoon. Hij gaf gas, reed over de startbaan, sneller en sneller, en toen tilden de wielen van de grond. Hij vloog!",
+      scenes:[
+        "De Wolkenpijl steeg hoger en hoger, dwars door de zachte witte wolken heen. Boven de wolken was het prachtig: de zon kleurde de hemel oranje en roze, en de wolken zagen eruit als een eindeloos veld van suikerspin. Lucas leunde tevreden achterover. Hier, hoog in de lucht, voelde hij zich helemaal vrij. Hij gaf een vrolijk zwaaitje naar een verbaasde meeuw die voorbij gleed.",
+        "Tijd voor een paar stunts! Lucas zat stevig vastgegespt en trok voorzichtig aan de stuurknuppel. De Wolkenpijl maakte een prachtige looping, helemaal over de kop, en Lucas lachte hardop. Daarna een rustige rol naar links, en toen weer netjes recht. Joehoe! riep hij. De wolken tolden vrolijk om hem heen. Hij was zo voorzichtig en zo handig dat het nooit eng werd, alleen maar superleuk.",
+        "In de verte zag Lucas een prachtige regenboog die zich over de hele hemel spande. Voorzichtig vloog hij er recht doorheen. Heel even leek de hele cockpit te kleuren in rood, geel en blauw, alsof hij door een toverpoort vloog. Aan de andere kant wachtte een groepje vogels, die netjes in een rij met hem mee vlogen, alsof ze hem wilden begeleiden. Lucas voelde zich nooit alleen daarboven.",
+        "Maar toen werd de lucht ineens donker. Een grote storm kwam aanzetten, met dikke grijze wolken en flitsen van bliksem. De wind begon aan de Wolkenpijl te trekken en het vliegtuig schudde heen en weer. Lucas hield het stuur stevig vast en bleef heel rustig. Niet bang zijn, zei hij zacht tegen zichzelf, gewoon rustig sturen. Hij vloog kalm tussen de buien door, precies zoals een echte piloot dat doet.",
+        "Plotseling begon de motor te sputteren. Prtt, prtt, deed hij, en op het dashboard ging een oranje lampje knipperen. Andere piloten zouden misschien schrikken, maar Lucas haalde diep adem en bleef kalm. Rustig blijven, dacht hij, ik kan dit. Hij controleerde alle knoppen, tikte zachtjes op de meter en zette de motor voorzichtig wat zachter. Even later bromde de Wolkenpijl weer gewoon door. Goed gedaan, fluisterde hij opgelucht tegen zijn vliegtuig.",
+        "Het was beter om voor de zekerheid even aan de grond te gaan. Lucas zag onder zich een klein groen eilandje met een vlak, zacht grasveld. Daar ga ik landen, besloot hij dapper. Heel voorzichtig daalde hij, lager en lager, met zijn ogen strak op het veld. De wielen raakten de grond, hobbel-de-bobbel over het gras, en toen stond de Wolkenpijl veilig stil. Lucas had het helemaal alleen geklaard. Wat een held!",
+        "Op het eilandje woonden vriendelijke mensen, die meteen kwamen aanrennen. Een echte piloot, geland op ons eiland! riepen ze blij. Ze juichten voor Lucas en gaven hem een glas verse limonade en een groot stuk taart. Een handige monteur keek even naar de motor, draaide hier en daar een schroefje, en zei met een knipoog: zo, hij is weer zo goed als nieuw. Lucas straalde van trots.",
+        "Het weer was weer rustig en helder geworden, en de eerste sterren begonnen te twinkelen. Lucas zwaaide naar zijn nieuwe vrienden op het eiland en startte de motor, die weer vrolijk bromde. De Wolkenpijl reed over het grasveld en steeg zacht op, de mooie avondlucht in. Onder hem fonkelden de lichtjes van het eiland hem na, als kleine sterretjes die dag zeiden."
+      ],
+      ending:"Onder een hemel vol sterren vloog Lucas rustig terug naar huis. De Wolkenpijl bromde tevreden en de maan wees hem de weg. Heel zachtjes daalde hij naar de thuisbaan en zette het vliegtuig zonder een schokje aan de grond. Lucas klopte liefdevol op het dashboard. Goed gevlogen, Wolkenpijl, fluisterde hij. Daarna liep hij naar huis, kroop in zijn warme bed en hing zijn pilotenpet aan de stoel. Hij was een echte held geweest vandaag. Zijn ogen vielen dicht en hij droomde van wolken zo zacht als suikerspin. Slaap zacht, kleine piloot."},
+
+    ridders:{name:"Een ridderavontuur",em:"⚔️",
+      intro:"Joris was de jongste ridder van het hele koninkrijk. Hij had een glimmend harnas, een dapper hart en een trouw paard dat Bliksem heette. Vanavond reed hij door de poort van kasteel Sterrenburcht, klaar voor een echt ridderavontuur. Hij zette zijn helm recht, gaf Bliksem een klopje op de hals en glimlachte. Dappere ridders waren nergens bang voor, en Joris al helemaal niet.",
+      scenes:[
+        "Op het grote ridderveld was een steekspel. Joris pakte zijn lange lans stevig vast en gaf Bliksem de sporen. In volle galop reed hij op de strodok af en raakte precies het midden. Bam! De hele tribune juichte. Joris won de gouden wimpel, maar het mooiste vond hij dat hij netjes boog voor zijn tegenstander. Goed gereden, riepen de mensen, leve ridder Joris!",
+        "Achter de heuvel hoorde Joris gesnik. Daar zat een kleine draak, niet groter dan een hond, die telkens per ongeluk vuur nieste. Hatsjoe, en pffft, een vlammetje. De andere dieren waren bang voor hem, maar Joris niet. Rustig maar, zei hij vriendelijk, en hij gaf de draak een slokje water. Het niezen stopte. De kleine draak kroop dankbaar tegen hem aan en werd vanaf dat moment Joris zijn trouwste vriendje.",
+        "In het dorp was een veulen losgebroken en het rende verschrikt over het plein. Niemand kon het vangen. Joris stapte rustig naar voren, stak zijn hand uit en sprak met een zachte stem. Het veulen kalmeerde, snuffelde aan zijn handschoen en liet zich gewillig terugbrengen naar de stal. De boer was zo blij dat hij Joris een mand vol verse appels gaf. Eentje was voor Bliksem, die hem zo opat.",
+        "Joris beklom de allerhoogste toren van het kasteel, trede na trede. Boven aangekomen keek hij uit over het hele koninkrijk. De zon zakte langzaam achter de heuvels en kleurde alles goud en roze. De rivier glinsterde, de daken van het dorp gloeiden, en in de verte blaatten de schaapjes die naar huis liepen. Wat is het hier mooi, fluisterde Joris, terwijl de eerste sterretjes verschenen.",
+        "Bij de geheime poort stond een oude wachter met een lange grijze baard. Wie mijn raadsel oplost, mag erdoor, zei hij. Ik word groter als je me voert, maar ik ga uit als je me water geeft, wat ben ik? Joris dacht goed na en glimlachte toen. Een vuur, zei hij. De wachter knikte trots en de zware poort zwaaide langzaam open. Knap gedaan, jonge ridder, bromde hij.",
+        "Er kwam onweer opzetten, met donder en dikke regen. De dorpelingen schrokken van de harde knallen. Maar Joris reed kalm rond op Bliksem en hielp iedereen veilig naar binnen, bij de warme haard. Niet bang zijn, zei hij geruststellend, het is maar een buitje, het trekt zo weer over. En ja hoor, even later scheen de maan alweer, en iedereen was veilig en droog. De mensen bedankten hun dappere ridder.",
+        "In de grote ridderzaal was er een feestmaal. Lange tafels stonden vol met dampende soep, vers brood en zoete honingkoek. Joris zat aan het hoofd, met de kleine draak op zijn schoot en Bliksem die door het raam naar binnen gluurde. Iedereen vertelde verhalen over dappere daden en lachte gezellig. De warme gloed van de haard maakte iedereen lekker slaperig en tevreden."
+      ],
+      ending:"Toen het feest voorbij was, klom Joris naar zijn torenkamer. Hij legde zijn harnas voorzichtig op de standaard en hing zijn zwaard aan de muur. De kleine draak rolde zich op aan het voeteneind en gloeide zachtjes als een nachtlampje. Door het hoge raam waakten de sterren over de hele Sterrenburcht. Joris kroop onder de warme deken en gaapte tevreden. Welterusten, dappere ridder, ruiste de wind langs de toren. En Joris viel in slaap, dromend van nieuwe avonturen. Slaap zacht, kleine ridder."},
+
+    dinos:{name:"Een dino-avontuur",em:"🦕",
+      intro:"Tijn vond op zolder een oude, glimmende klok met een geheime knop. Toen hij erop drukte, begon alles om hem heen te draaien, en floep, hij stond ineens in een warm, groen oerwoud, lang, lang geleden. Overal ritselden grote bladeren en in de verte klonk een diep, vriendelijk gebrom. Tijn keek met grote ogen om zich heen. Hij was in het land van de dino's!",
+      scenes:[
+        "Voor hem stond een reusachtige dino met een lange nek, die rustig de blaadjes uit de hoogste bomen at. Hij was zo groot als een huis, maar zijn ogen keken heel zacht en vriendelijk. De langnek boog zijn kop naar beneden en snuffelde voorzichtig aan Tijns haar. Tijn moest lachen en aaide de grote, warme snuit. Hallo grote vriend, zei hij zacht. De dino bromde tevreden terug.",
+        "Uit een struik kwam een klein dinootje gestapt, niet groter dan een puppy, met grappige stipjes op zijn rug. Hij keek Tijn aan, piepte vrolijk en huppelde meteen achter hem aan. Ik noem jou Dotje, lachte Tijn. Vanaf dat moment week Dotje niet meer van zijn zij. Samen sprongen ze over boomstammen en plasten ze door een ondiep beekje, terwijl Dotje van plezier kleine sprongetjes maakte.",
+        "De vriendelijke langnek liet Tijn op zijn brede rug klimmen. Heel langzaam en voorzichtig liep de grote dino door het oerwoud. Vanaf die hoogte kon Tijn alles zien: glinsterende watervallen, velden vol bloemen en andere dinosaurussen die rustig graasden. Het wiegde zachtjes heen en weer, als een schommel. Tijn hield zich vast aan de nek en voelde zich de gelukkigste ontdekkingsreiziger van de hele oertijd.",
+        "Bij een modderpoel hoorde Tijn gesputter. Een jonge dino zat vast in de dikke modder en kon er niet meer uit. Niet bang zijn, riep Tijn, ik help je! Samen met de sterke langnek trok hij voorzichtig aan de dino, en met een grote sjlurp kwam hij los. De geredde dino schudde de modder van zich af en gaf Tijn dankbaar een zachte kopstoot. Tijn lachte van oor tot oor.",
+        "Plotseling begon het te regenen, met warme, dikke druppels. Tijn en Dotje schuilden onder een enorm varenblad, zo groot als een paraplu. Om hen heen kropen ook andere dieren bij elkaar om droog te blijven. Het was er knus en warm, en de regen tikte zachtjes op de bladeren. Tijn aaide Dotje, die tevreden tegen hem aan kroop. Even later scheen de zon alweer en glinsterde alles fris en groen.",
+        "Toen klonk er een diep gebrom, en uit de bomen kwam een grote dino met sterke tanden tevoorschijn. Tijn schrok even. Maar de grote dino keek helemaal niet boos, alleen maar een beetje verlegen. Hij had gewoon zin om mee te spelen, maar door zijn grootte durfde niemand bij hem in de buurt te komen. Tijn stapte dapper naar voren en gaf hem een aai over zijn neus. De grote dino bromde blij, en ze werden meteen vrienden.",
+        "Tijn vond een nestje met glanzende dino-eieren, die zachtjes glommen in het zonlicht. De mama-dino keek er bezorgd bij. Ik pas wel even op, zei Tijn vriendelijk. Hij hielp de eieren netjes terug in het warme nest te leggen en legde er zachte bladeren overheen. De mama-dino bromde dankbaar en aaide hem met haar snuit. Tijn voelde zich trots dat hij de kleine dinootjes had geholpen."
+      ],
+      ending:"Het werd tijd om naar huis te gaan. Tijn knuffelde Dotje nog één keer stevig en zwaaide naar al zijn grote, vriendelijke dino-vrienden. Hij drukte op de knop van de glimmende klok, en floep, daar stond hij weer veilig op zijn eigen zolder. Buiten was het donker geworden en twinkelden de sterren. Tijn kroop in zijn warme bed met een grote glimlach. Wat een avontuur, gaapte hij. En terwijl hij zijn ogen sloot, droomde hij van Dotje en het warme, groene oerwoud. Slaap zacht, kleine ontdekker."},
+
+    piraten:{name:"Een piratenavontuur",em:"🏴‍☠️",
+      intro:"Kapitein Bas was de vrolijkste piraat van alle zeven zeeën. Zijn schip heette de Golfdraver, met grote witte zeilen en een vlag die wapperde in de wind. Op zijn schouder zat zijn beste vriend, een kleurige papegaai die Kraak heette. Vanavond zetten ze koers naar het geheime schateiland. Volle kracht vooruit, riep Bas vrolijk, en de Golfdraver gleed de glinsterende zee op.",
+      scenes:[
+        "De Golfdraver zeilde rustig over de kalme zee. Naast het schip sprongen vrolijke dolfijnen mee door de golven, die glommen in het maanlicht. Kraak de papegaai krijste blij: vooruit, vooruit! Bas stond aan het roer en voelde de zilte wind in zijn gezicht. Hij neuriede een vrolijk zeemansliedje, en de dolfijnen leken precies op de maat mee te springen. Wat een heerlijke avond op zee.",
+        "Bas rolde de oude schatkaart uit op tafel. Er stonden golven op, een eiland, en een groot rood kruis. Daar moeten we heen, mannen, wees hij met zijn vinger. Kraak landde boven op de kaart en knikte wijs, alsof hij precies wist waar het was. Samen bestudeerden ze de route langs de rotsen en de baai. Het avontuur kon beginnen, en Bas grinnikte van voorpret.",
+        "Plotseling stak er een stevige wind op en kwamen er donkere wolken aandrijven. De golven werden hoog en de Golfdraver wiebelde heen en weer. Maar kapitein Bas bleef rustig en hield het roer stevig vast. Rustig blijven, mannen, riep hij, ik breng ons er veilig doorheen! Hij stuurde kalm tussen de golven door, en even later trok de storm alweer over. De zee werd weer glad, en iedereen juichte voor hun dappere kapitein.",
+        "Eindelijk doemde het schateiland op, met witte stranden en hoge palmbomen. De Golfdraver liet het anker zakken en Bas waadde door het ondiepe, warme water naar de kust. Het zand was zacht en goudgeel, en kleurige vogels floten in de bomen. Land in zicht! krijste Kraak vrolijk. Bas plantte zijn laars in het zand en haalde diep adem. Hier ergens lag de schat verstopt.",
+        "Bas volgde de kaart, langs de kromme palmboom en voorbij de grote rots. Tel tien passen naar het westen, las hij hardop. Daar, onder een hoopje zand, stootte zijn schep op iets hards. Het was een oude houten kist! Met bonzend hart tilde Bas het deksel op. Binnenin glinsterden gouden munten en glanzende schelpen, die schitterden in de zon. Hoera! juichte hij, we hebben de schat gevonden!",
+        "Bij de rotsen zat een vriendelijke zeemeermin op een steen, die zacht een liedje zong. Ze wees Bas de mooiste schelpen en de veiligste weg terug naar zijn boot. Een grote zeeschildpad kwam langszwemmen en knikte vriendelijk. Bedankt voor jullie hulp, zei Bas beleefd. De zeemeermin gaf hem een glinsterende parel als aandenken, en Bas beloofde dat hij altijd goed voor de zee zou zorgen.",
+        "Terug op de Golfdraver verdeelde Bas de schat eerlijk onder de hele bemanning. Voor jou, en voor jou, en voor jou, zei hij, want een goede kapitein deelt altijd. Iedereen kreeg een handvol glanzende munten en een mooie schelp. De matrozen juichten en Kraak danste vrolijk op de reling. Samen aten ze een feestmaal van vers fruit van het eiland, en niemand was zo blij als kapitein Bas."
+      ],
+      ending:"Onder een hemel vol sterren zette de Golfdraver koers naar huis. De zee was kalm en de wind blies zacht in de zeilen. Kraak de papegaai stak slaperig zijn kopje onder zijn vleugel. Kapitein Bas legde de glinsterende parel veilig weg en kroop in zijn gezellige hangmat onder dek. De golven wiegden het schip rustig heen en weer, als een wiegje. Welterusten, dappere kapitein, ruiste de zee. En Bas viel tevreden in slaap, dromend van de volgende schat. Slaap zacht, kleine piraat."},
+
+    grappig:{name:"Een grappig avontuur",em:"😄",
+      intro:"Bram was de grappigste jongen van de hele straat. Hij kon iedereen aan het lachen maken, zelfs de buurman die altijd zo serieus keek. Maar vandaag was een heel bijzondere dag, want vandaag ging werkelijk alles op de allergekste manier. Bram werd wakker, wreef in zijn ogen, en wist nog niet wat voor dolle dag hem te wachten stond. Het begon al meteen toen hij uit bed stapte, met zijn pyjama binnenstebuiten.",
+      scenes:[
+        "Bij het ontbijt wilde Bram een pannenkoek bakken. Hij gooide hem hoog in de lucht om hem om te draaien, maar hij gooide net iets te hard. Floep! De pannenkoek plakte vast aan het plafond, precies boven de tafel. Bram keek omhoog met open mond. Toen liet de pannenkoek langzaam los en plopte recht op de kop van zijn hond Wafel, die hem doodleuk in één hap opat en vrolijk kwispelde. Bram lag in een deuk.",
+        "Bram wilde zich snel aankleden, maar in zijn haast deed hij zijn trui over zijn hoofd verkeerd om aan, zodat hij niets meer kon zien. Hij stak twee benen in één broekspijp en hopte als een konijntje door de kamer. Boem, hij struikelde zachtjes over een kussen en rolde grinnikend over de grond. Toen hij eindelijk zijn hoofd door de goede opening kreeg, stonden zijn haren alle kanten op. Hij keek in de spiegel en proestte het uit.",
+        "In de woonkamer woonde een brutale papegaai die Kletskop heette. Die papegaai herhaalde werkelijk alles wat Bram zei, maar dan net iets gekker. Goedemorgen, zei Bram. Goedemorgen-dombo! krijste Kletskop. Bram lachte en zei: jij bent gek. Jij bent gekker! riep de papegaai meteen terug, en hij deed er nog een raar dansje bovenop, wiebelend op één pootje. Samen kletsten en lachten ze de hele ochtend door.",
+        "Toen kwam er een gigantische niesbui opzetten. Bram voelde het kriebelen in zijn neus, hoger en hoger. Hatsjoe! De nies was zo enorm hard dat zijn pet van zijn hoofd vloog, een boog door de lucht maakte en boven op de punt van een lantaarnpaal buiten landde. Bram keek ernaar met grote ogen. Wafel de hond blafte verbaasd, en een voorbijganger klapte zelfs voor de wereldrecord-nies. Bram maakte een buiginkje.",
+        "Bram had een gekke uitvinding gemaakt: schoenen met springveren eronder. Hij trok ze aan en deed voorzichtig een stapje. Boing! Hij stuiterde meteen zo hoog dat hij over de schutting heen keek en zijn buurman gedag kon zwaaien. Boing, boing, boing! Hij stuiterde van de tuin naar het dak van het schuurtje en weer terug, gillend van het lachen. Misschien moet ik er nog een uitknop op maken, hikte hij tussen het stuiteren door.",
+        "Op het schoolplein wilde Bram een goocheltruc laten zien. Kijk goed, zei hij geheimzinnig, ik tover dit konijn uit mijn hoed! Hij zwaaide met zijn toverstokje, tikte op de hoed en riep: hocus pocus! Maar in plaats van een konijn sprong er een verbaasde kikker uit, die meteen op het hoofd van de meester landde. Kwaak! Iedereen, ook de meester, lag dubbel van het lachen. Eh, dat was niet helemaal de bedoeling, grinnikte Bram.",
+        "Die avond hoorde Bram een zacht gegiechel onder zijn bed. Hij gluurde eronder en zag twee vriendelijke ogen. Het was een klein, pluizig kietelmonster, dat helemaal niet eng was, maar juist heel lief. Het monstertje kietelde zachtjes Brams tenen, en Bram kietelde lachend terug. Samen rolden ze giechelend over de grond, tot ze allebei buiten adem waren van het lachen. Jij bent het grappigste monster ooit, zei Bram.",
+        "Toen alles eindelijk weer een beetje rustig werd, ging Bram op zijn rug op bed liggen, helemaal uitgeput van de pret. Zijn buik deed pijn van het lachen. Het kietelmonster kroop gezellig naast hem en de papegaai mompelde slaperig: welterusten-dombo, maar nu heel zacht en lief. Bram glimlachte van oor tot oor. Wat een dag, zei hij, dit was de gekste dag ooit."
+      ],
+      ending:"Helemaal moe van het lachen kroop Bram onder zijn dekbed. Zijn wangen deden pijn van het grijnzen en zijn ogen werden zwaar. Wafel de hond rolde zich op aan het voeteneind, het kietelmonster gaapte zachtjes onder het bed, en Kletskop de papegaai stak zijn kopje onder zijn vleugel. Bram dacht nog even aan de pannenkoek op het plafond en de kikker op het hoofd van de meester, en hij grinnikte na. Welterusten, gekkerd, fluisterde hij tegen zichzelf. En met een grote glimlach viel Bram in slaap. Slaap zacht, en droom maar lekker gek."}
+  };
+
+  var papaStory={em:"💛",title:"Het verhaaltje dat papa vergat",
+    text:"Er was eens een papa die elke avond verhaaltjes vertelde. Hij verzon de gekste avonturen, zomaar uit zijn hoofd, terwijl zijn ogen twinkelden. Maar op een avond was de papa heel erg moe, zo moe dat de woorden in zijn hoofd in slaap waren gevallen voordat hij ze kon vertellen. Het spijt me, zei hij zacht, vanavond lukt het me niet. Toen gebeurde er iets bijzonders. Een klein sterretje aan de hemel had al die avonden meegeluisterd, elke avond opnieuw. En het sterretje kende alle verhaaltjes van papa van buiten, woord voor woord. Het liet zijn licht door het raam naar binnen glijden, tot vlak bij het oor van het kind. Ik vertel het wel even verder, fluisterde de ster. En zo vertelde het sterretje het verhaaltje dat papa anders verteld zou hebben, met dezelfde warme stem in het hart van het kind. Want weet je, een verhaaltje verdwijnt nooit echt. Het wacht gewoon, in de sterren, in de maan, en in alle mensen die van je houden. En zelfs als papa te moe is, of als je een keer te laat naar bed gaat, blijft er altijd iemand wakker om je een verhaaltje te geven. De ster glansde nog één keer extra helder, speciaal voor jou. Slaap maar lekker, fluisterde de ster. Wij passen samen op je. En het kind glimlachte, met de stem van papa nog zachtjes nagloeiend in zijn dromen. Welterusten. Tot morgen."};
+
+  var chooser=document.getElementById("chooser");
+  var reader=document.getElementById("reader");
+  var rTitle=document.getElementById("rTitle");
+  var rSub=document.getElementById("rSub");
+  var rEm=document.getElementById("rEm");
+  var textEl=document.getElementById("text");
+  var noteEl=document.getElementById("note");
+  var toggle=document.getElementById("toggle");
+  var toggleEm=document.getElementById("toggleEm");
+  var toggleText=document.getElementById("toggleText");
+  var restart=document.getElementById("restart");
+  var back=document.getElementById("back");
+  var speedSel=document.getElementById("speed");
+  var voiceSel=document.getElementById("voice");
+  var goBtn=document.getElementById("go");
+  var specialBtn=document.getElementById("special");
+  var slider=document.getElementById("minutes");
+  var minOut=document.getElementById("minOut");
+
+  var selTheme="astronaut";
+  document.querySelector('[data-theme="astronaut"]').classList.add("sel");
+  var themeBtns=document.querySelectorAll("#theme .pill");
+  themeBtns.forEach(function(b){
+    b.addEventListener("click",function(){
+      themeBtns.forEach(function(x){x.classList.remove("sel");});
+      b.classList.add("sel");
+      selTheme=b.getAttribute("data-theme");
+    });
+  });
+  slider.addEventListener("input",function(){ minOut.textContent=slider.value; });
+
+  var synth=window.speechSynthesis;
+  var sentences=[];
+  var idx=0;
+  var playing=false;
+  var dutchVoices=[];
+  var chosenVoice=null;
+
+  function isNl(v){ return /nl(-|_)?/i.test(v.lang); }
+  function populateVoices(){
+    if(!synth)return;
+    var voices=synth.getVoices()||[];
+    dutchVoices=voices.filter(isNl);
+    voiceSel.innerHTML="";
+    if(!dutchVoices.length){
+      var o=document.createElement("option");
+      o.value=""; o.textContent="Standaardstem";
+      voiceSel.appendChild(o);
+      chosenVoice=null;
+      return;
+    }
+    dutchVoices.forEach(function(v,i){
+      var opt=document.createElement("option");
+      opt.value=String(i); opt.textContent=v.name;
+      voiceSel.appendChild(opt);
+    });
+    var keep=dutchVoices.indexOf(chosenVoice);
+    if(keep<0){ chosenVoice=dutchVoices[0]; keep=0; }
+    voiceSel.value=String(keep);
+  }
+  if(synth){ populateVoices(); if(synth.onvoiceschanged!==undefined){ synth.onvoiceschanged=populateVoices; } }
+  voiceSel.addEventListener("change",function(){
+    var i=parseInt(voiceSel.value,10);
+    if(!isNaN(i)&&dutchVoices[i]){
+      chosenVoice=dutchVoices[i];
+      if(playing){ var keep=idx; pause(); idx=keep; play(); }
+    }
+  });
+
+  function wc(s){ return s.trim().split(/\s+/).length; }
+
+  function buildText(t,minutes){
+    var target=minutes*WPM;
+    var budget=target-wc(t.intro)-wc(t.ending);
+    var order=t.scenes.map(function(_,i){return i;});
+    for(var i=order.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var tmp=order[i]; order[i]=order[j]; order[j]=tmp; }
+    var chosen=[]; var used=0;
+    order.forEach(function(ix){
+      var w=wc(t.scenes[ix]);
+      if(used+w<=budget+90){ chosen.push(ix); used+=w; }
+    });
+    if(!chosen.length){
+      var sIdx=0,sw=1e9;
+      t.scenes.forEach(function(sc,i){ var w=wc(sc); if(w<sw){ sw=w; sIdx=i; } });
+      chosen=[sIdx];
+    }
+    chosen.sort(function(a,b){return a-b;});
+    return [t.intro].concat(chosen.map(function(i){return t.scenes[i];})).concat([t.ending]).join(" ");
+  }
+
+  function splitSentences(t){
+    var parts=t.match(/[^.!?…]+[.!?…]+[\s]*/g);
+    return parts?parts.map(function(p){return p.trim();}):[t];
+  }
+  function renderText(){
+    textEl.innerHTML="";
+    sentences.forEach(function(s,i){
+      var span=document.createElement("span");
+      span.className="sent"; span.setAttribute("data-i",i);
+      span.textContent=s+" ";
+      textEl.appendChild(span);
+    });
+  }
+  function highlight(i){
+    var spans=textEl.querySelectorAll(".sent");
+    spans.forEach(function(sp,j){ sp.classList.toggle("on",j===i); });
+    if(i>=0&&spans[i]){ spans[i].scrollIntoView({block:"center",behavior:"smooth"}); }
+  }
+
+  function openReader(title,sub,em,text){
+    stop();
+    rTitle.textContent=title;
+    rSub.textContent=sub||"";
+    rEm.textContent=em;
+    sentences=splitSentences(text);
+    idx=0; renderText(); highlight(-1);
+    chooser.style.display="none";
+    reader.style.display="block";
+    if(!synth){ noteEl.textContent="Op dit apparaat kan ik niet hardop voorlezen, maar je kunt het verhaaltje hier gewoon lezen."; toggle.style.display="none"; }
+    else { noteEl.textContent=""; toggle.style.display="inline-flex"; }
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function speakFrom(i){
+    if(!synth)return;
+    if(i>=sentences.length){ finish(); return; }
+    idx=i; highlight(i);
+    var u=new SpeechSynthesisUtterance(sentences[i]);
+    u.lang="nl-NL";
+    if(chosenVoice)u.voice=chosenVoice;
+    u.rate=parseFloat(speedSel.value);
+    u.pitch=1;
+    u.onend=function(){ if(playing){ speakFrom(i+1); } };
+    synth.speak(u);
+  }
+  function play(){
+    if(!synth)return;
+    playing=true;
+    toggleEm.textContent="⏸️"; toggleText.textContent="Pauze";
+    if(idx>=sentences.length)idx=0;
+    speakFrom(idx);
+  }
+  function pause(){
+    playing=false; if(synth)synth.cancel();
+    toggleEm.textContent="▶️"; toggleText.textContent="Verder lezen";
+  }
+  function finish(){
+    playing=false; if(synth)synth.cancel();
+    idx=0; highlight(-1);
+    toggleEm.textContent="▶️"; toggleText.textContent="Nog een keer";
+  }
+  function stop(){
+    playing=false; if(synth)synth.cancel();
+    idx=0;
+    toggleEm.textContent="▶️"; toggleText.textContent="Voorlezen";
+  }
+
+  goBtn.addEventListener("click",function(){
+    var key=selTheme; var surprise=false;
+    if(key==="verras"){
+      var keys=["astronaut","voetbal","piloot","ridders","dinos","piraten","grappig"];
+      key=keys[Math.floor(Math.random()*keys.length)];
+      surprise=true;
+    }
+    var t=themes[key];
+    var mins=parseInt(slider.value,10);
+    var text=buildText(t,mins);
+    var sub=(surprise?"Verrassing! ":"")+"ongeveer "+mins+" minuten";
+    openReader(t.name,sub,surprise?"🎲":t.em,text);
+  });
+  specialBtn.addEventListener("click",function(){
+    openReader(papaStory.title,"Een verhaaltje speciaal voor jou",papaStory.em,papaStory.text);
+  });
+
+  toggle.addEventListener("click",function(){ if(playing){ pause(); } else { play(); } });
+  restart.addEventListener("click",function(){ pause(); idx=0; highlight(-1); play(); });
+  back.addEventListener("click",function(){ stop(); reader.style.display="none"; chooser.style.display="block"; window.scrollTo({top:0,behavior:"smooth"}); });
+  speedSel.addEventListener("change",function(){ if(playing){ var keep=idx; pause(); idx=keep; play(); } });
+  window.addEventListener("beforeunload",function(){ if(synth)synth.cancel(); });
+})();
+</script>
+</body>
+</html>
