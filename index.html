@@ -128,6 +128,54 @@
   .note{font-size:14px;color:#a39ce0;margin-top:26px;}
   .foot{text-align:center;font-size:13px;color:#7d77b5;margin-top:46px;}
 
+  /* tabs: kant-en-klaar vs maak je eigen */
+  .tabs{display:flex;gap:8px;margin:0 0 26px;background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:6px;}
+  .tab{flex:1;font-family:inherit;font-size:15.5px;font-weight:600;cursor:pointer;color:#cfc8f5;
+    background:transparent;border:none;border-radius:12px;padding:12px 10px;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s;}
+  .tab:hover{background:rgba(255,255,255,.08);}
+  .tab.sel{background:rgba(255,217,122,.22);color:#fff;box-shadow:0 0 14px rgba(255,213,120,.2);}
+  .tab .em{font-size:18px;}
+
+  .txt{width:100%;font-family:inherit;font-size:16px;font-weight:500;color:#fff;
+    background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.2);border-radius:13px;
+    padding:12px 14px;margin-bottom:18px;}
+  .txt::placeholder{color:#8e88c4;}
+  .txt:focus{outline:none;border-color:#ffd97a;background:rgba(255,255,255,.12);}
+  .makestatus{font-size:15.5px;font-weight:600;color:#ffe6a0;margin:18px 0 0;min-height:22px;line-height:1.5;}
+  .makestatus.err{color:#ff9d8a;}
+
+  /* papa-instellingen */
+  .gear{position:fixed;top:14px;right:14px;z-index:40;width:44px;height:44px;border-radius:50%;
+    font-size:21px;line-height:1;cursor:pointer;color:#efeaff;background:rgba(255,255,255,.08);
+    border:1.5px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transition:.2s;}
+  .gear:hover{background:rgba(255,255,255,.16);transform:rotate(40deg);}
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-start;justify-content:center;
+    background:rgba(8,5,24,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);padding:40px 16px;overflow-y:auto;}
+  .modal.show{display:flex;}
+  .modal-card{position:relative;width:100%;max-width:480px;background:linear-gradient(180deg,#241a4d,#19123a);
+    border:1.5px solid rgba(255,255,255,.16);border-radius:22px;padding:26px 24px 24px;
+    box-shadow:0 24px 60px rgba(0,0,0,.5);}
+  .modal-card h2{font-size:21px;margin:0 0 8px;}
+  .modal-x{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;cursor:pointer;
+    font-size:14px;color:#cfc8f5;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);}
+  .modal-x:hover{background:rgba(255,255,255,.16);}
+  .set-intro,.set-foot{font-size:13.5px;color:#b3ade0;line-height:1.55;font-weight:500;margin:0;}
+  .set-foot{margin-top:20px;}
+  .set-label{display:block;font-size:14px;font-weight:600;color:#efeaff;margin:16px 0 7px;}
+  .modal-card .txt{margin-bottom:0;}
+  .set-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;}
+  .set-saved{font-size:13.5px;font-weight:700;color:#9be6a0;}
+  .voice-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+  .voice-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:13px;cursor:pointer;
+    background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.14);transition:.15s;}
+  .voice-item:hover{background:rgba(255,255,255,.12);}
+  .voice-item.sel{border-color:#ffd97a;background:rgba(255,217,122,.18);}
+  .voice-item .vname{flex:1;font-size:15.5px;font-weight:600;color:#efeaff;}
+  .voice-item .vplay{width:34px;height:34px;flex:none;border-radius:50%;cursor:pointer;font-size:13px;color:#3a2a00;
+    background:linear-gradient(180deg,#ffe49a,#f6b94b);border:none;display:flex;align-items:center;justify-content:center;}
+
   @media(max-width:480px){
     h1{font-size:25px;} #text{font-size:19px;} #points li{font-size:18px;} .pill{font-size:15px;padding:11px 14px;}
   }
@@ -135,6 +183,28 @@
 </head>
 <body>
 <div class="stars" id="stars" aria-hidden="true"></div>
+
+<button id="gear" class="gear" title="Papa-instellingen" aria-label="Papa-instellingen">⚙️</button>
+<div id="settings" class="modal" aria-hidden="true">
+  <div class="modal-card">
+    <button class="modal-x" id="setClose" aria-label="Sluiten">✕</button>
+    <h2 id="setTitle">⚙️ Papa-instellingen</h2>
+    <p class="set-intro" id="setIntro">Hier vul je je geheime sleutels in. Ze blijven alleen op dit apparaat (in deze browser) en komen nergens op internet te staan.</p>
+    <label class="set-label" id="lblClaude" for="claudeKey">Claude-sleutel — voor het schrijven van verhaaltjes</label>
+    <input id="claudeKey" class="txt" type="password" placeholder="sk-ant-..." autocomplete="off" autocapitalize="off" spellcheck="false" />
+    <label class="set-label" id="lblEleven" for="elevenKey">ElevenLabs-sleutel — voor de stem</label>
+    <input id="elevenKey" class="txt" type="password" placeholder="..." autocomplete="off" autocapitalize="off" spellcheck="false" />
+    <div class="set-row">
+      <button class="btn" id="setSave">💾 Bewaren</button>
+      <button class="btn" id="loadVoicesBtn">🎙️ Stemmen ophalen</button>
+      <span class="set-saved" id="setSaved"></span>
+    </div>
+    <p class="set-label" id="lblVoices">Kies de voorleesstem:</p>
+    <div class="voice-list" id="voiceList"></div>
+    <p class="set-foot" id="setFoot">Let op: zelfgemaakte verhaaltjes met stem kosten een klein beetje geld per keer (via je eigen sleutels).</p>
+  </div>
+</div>
+
 <div class="wrap">
 
   <div class="hero">
@@ -246,6 +316,12 @@
       <button class="langbtn" data-lang="es"><span class="fl">🇪🇸</span> Español</button>
       -->
     </div>
+    <div class="tabs" id="tabs">
+      <button class="tab sel" data-tab="ready"><span class="em">📚</span> Kant-en-klaar</button>
+      <button class="tab" data-tab="make"><span class="em">✨</span> Maak je eigen</button>
+    </div>
+
+    <div id="readyPanel">
     <p class="label">1. Waar gaat je avontuur over?</p>
     <div class="row" id="theme">
       <button class="pill" data-theme="astronaut"><span class="em">🚀</span> Astronaut</button>
@@ -274,6 +350,23 @@
 
     <div class="divider">
       <button class="btn" id="special"><span class="em">💛</span> Het verhaaltje voor als papa moe is</button>
+    </div>
+    </div>
+
+    <div id="makePanel" style="display:none">
+      <p class="label" id="mkQName">1. Hoe heet de held van je verhaaltje?</p>
+      <input id="heroName" class="txt" maxlength="40" placeholder="bijv. Sem, Daan of Lotte…" />
+      <p class="label" id="mkQTopic">2. Waar gaat het over?</p>
+      <div class="row" id="topicRow"></div>
+      <input id="topicFree" class="txt" maxlength="80" placeholder="…of typ zelf een onderwerp" />
+      <p class="label" id="mkQLen">3. Hoe lang mag het duren?</p>
+      <div class="slider-wrap">
+        <input type="range" min="3" max="30" value="6" step="1" id="minutes2" />
+        <span class="mins" id="minOut2">6 min</span>
+      </div>
+      <p class="slidehint" id="mkLenHint">✨ De computer schrijft een gloednieuw verhaaltje, precies zo lang als jij wilt. Even geduld — dat duurt een paar tellen.</p>
+      <button class="go" id="makeGo"><span class="em">✨</span> Maak mijn verhaaltje</button>
+      <p class="makestatus" id="makeStatus"></p>
     </div>
   </div>
 
@@ -1044,6 +1137,7 @@
     themeBtns.forEach(function(b){ var k=b.getAttribute("data-theme"); b.innerHTML='<span class="em">'+emojiFor(k)+'</span> '+U.pills[k]; });
     if(!playing){ toggleEm.textContent="▶️"; toggleText.textContent=U.play; }
     minOut.textContent=fmtDuur(parseInt(slider.value,10));
+    applyMakerLang();
   }
 
   var chooser=document.getElementById("chooser");
@@ -1164,13 +1258,37 @@
     window.scrollTo({top:0,behavior:"smooth"});
   }
 
-  function playSeg(i){
-    if(i>=segs.length){ finish(); return; }
-    ai=i; highlight(i);
-    audioEl.src=segs[i].file;
+  function startSrc(url){
+    audioEl.src=url;
     setRate();
     var p=audioEl.play();
     if(p&&p.catch){ p.catch(function(){}); }
+  }
+  function playSeg(i){
+    if(i>=segs.length){ finish(); return; }
+    ai=i; highlight(i);
+    var seg=segs[i];
+    if(seg.file){ noteEl.textContent=""; startSrc(seg.file); prefetch(i+1); return; }
+    if(seg.tts){
+      if(!cfg.elevenKey||!cfg.voiceId){ ttsFail(MKt().noVoiceSet); return; }
+      noteEl.textContent="🎙️ "+MKt().makingVoice;
+      ttsGenerate(seg.text).then(function(url){
+        seg.file=url;
+        if(!playing||ai!==i)return;
+        noteEl.textContent=""; startSrc(url); prefetch(i+1);
+      }).catch(function(e){ if(playing&&ai===i){ ttsFail(MKt().voiceErr+" ("+e.message+")"); } });
+    }
+  }
+  function prefetch(i){
+    var nx=segs[i];
+    if(nx&&nx.tts&&!nx.file&&cfg.elevenKey&&cfg.voiceId){
+      ttsGenerate(nx.text).then(function(u){ if(!nx.file)nx.file=u; }).catch(function(){});
+    }
+  }
+  function ttsFail(msg){
+    playing=false; pausedMid=false; try{audioEl.pause();}catch(e){}
+    toggleEm.textContent="▶️"; toggleText.textContent=UI[lang].play;
+    noteEl.textContent="😢 "+msg;
   }
   audioEl.addEventListener("ended",function(){ if(playing){ playSeg(ai+1); } });
   audioEl.addEventListener("error",function(){
@@ -1256,6 +1374,253 @@
       applyLang();
     });
   });
+  // ===== Maak je eigen verhaaltje =====
+  var MODEL="claude-sonnet-4-6";
+  var PAPA_VOICE="c3c15a36-61ae-43a6-a039-65c14453ec86";
+
+  var MK={
+    nl:{
+      tabReady:"Kant-en-klaar", tabMake:"Maak je eigen",
+      qName:"1. Hoe heet de held van je verhaaltje?", namePh:"bijv. Sem, Daan of Lotte…",
+      qTopic:"2. Waar gaat het over?", topicPh:"…of typ zelf een onderwerp",
+      qLen:"3. Hoe lang mag het duren?",
+      lenHint:"✨ De computer schrijft een gloednieuw verhaaltje, precies zo lang als jij wilt. Even geduld — dat duurt een paar tellen.",
+      makeBtn:"Maak mijn verhaaltje",
+      writing:"Het verhaaltje wordt geschreven…", makingVoice:"Papa's stem wordt gemaakt…",
+      about:"Zelfgemaakt ·", defName:"de held", defTopic:"een leuk avontuur",
+      errNoClaude:"⚙️ Vraag papa om eerst de sleutels in te stellen (tandwiel rechtsboven).",
+      errGen:"Het lukte niet om het verhaaltje te maken. Probeer het nog eens.",
+      noVoiceSet:"Stel eerst een stem in via ⚙️ (tandwiel rechtsboven).",
+      voiceErr:"De stem lukte niet",
+      topics:{stoer:"Stoer",lief:"Lief",vriendschap:"Vriendschap",dapper:"Dapper",grappig:"Grappig",spannend:"Spannend",avontuur:"Avontuur",magie:"Magie",dieren:"Dieren",ruimte:"Ruimte"},
+      setTitle:"⚙️ Papa-instellingen",
+      setIntro:"Hier vul je je geheime sleutels in. Ze blijven alleen op dit apparaat (in deze browser) en komen nergens op internet te staan.",
+      lblClaude:"Claude-sleutel — voor het schrijven van verhaaltjes",
+      lblEleven:"ElevenLabs-sleutel — voor de stem",
+      save:"Bewaren", loadV:"Stemmen ophalen", saved:"✓ Bewaard",
+      lblVoices:"Kies de voorleesstem:",
+      noVoices:"Nog geen stemmen. Vul je ElevenLabs-sleutel in en klik op ‘Stemmen ophalen’.",
+      needEleven:"Vul eerst je ElevenLabs-sleutel in.",
+      setFoot:"Let op: zelfgemaakte verhaaltjes met stem kosten een klein beetje geld per keer (via je eigen sleutels)."
+    },
+    en:{
+      tabReady:"Ready-made", tabMake:"Make your own",
+      qName:"1. What is your hero called?", namePh:"e.g. Sam, Daan or Lotte…",
+      qTopic:"2. What is it about?", topicPh:"…or type your own topic",
+      qLen:"3. How long may it last?",
+      lenHint:"✨ The computer writes a brand-new story, exactly as long as you like. Hang on — it takes a few seconds.",
+      makeBtn:"Make my story",
+      writing:"Writing your story…", makingVoice:"Making papa's voice…",
+      about:"Homemade ·", defName:"the hero", defTopic:"a fun adventure",
+      errNoClaude:"⚙️ Ask papa to set the keys first (gear, top right).",
+      errGen:"Could not make the story. Please try again.",
+      noVoiceSet:"Choose a voice first via ⚙️ (gear, top right).",
+      voiceErr:"The voice failed",
+      topics:{stoer:"Tough",lief:"Sweet",vriendschap:"Friendship",dapper:"Brave",grappig:"Funny",spannend:"Exciting",avontuur:"Adventure",magie:"Magic",dieren:"Animals",ruimte:"Space"},
+      setTitle:"⚙️ Papa settings",
+      setIntro:"Enter your secret keys here. They stay only on this device (in this browser) and are never put online.",
+      lblClaude:"Claude key — for writing the stories",
+      lblEleven:"ElevenLabs key — for the voice",
+      save:"Save", loadV:"Load voices", saved:"✓ Saved",
+      lblVoices:"Choose the reading voice:",
+      noVoices:"No voices yet. Enter your ElevenLabs key and click ‘Load voices’.",
+      needEleven:"Enter your ElevenLabs key first.",
+      setFoot:"Note: homemade stories with voice cost a little money each time (via your own keys)."
+    }
+  };
+  function MKt(){ return MK[lang]||MK.nl; }
+
+  var cfg=(function(){ try{ return JSON.parse(localStorage.getItem("vm_cfg")||"{}"); }catch(e){ return {}; } })();
+  function saveCfg(){ try{ localStorage.setItem("vm_cfg",JSON.stringify(cfg)); }catch(e){} }
+
+  var heroName=document.getElementById("heroName");
+  var topicFree=document.getElementById("topicFree");
+  var topicRow=document.getElementById("topicRow");
+  var makeGo=document.getElementById("makeGo");
+  var makeStatus=document.getElementById("makeStatus");
+  var slider2=document.getElementById("minutes2");
+  var minOut2=document.getElementById("minOut2");
+  var tabBtns=document.querySelectorAll("#tabs .tab");
+  var readyPanel=document.getElementById("readyPanel");
+  var makePanel=document.getElementById("makePanel");
+  var previewAudio=new Audio();
+
+  slider2.addEventListener("input",function(){ minOut2.textContent=fmtDuur(parseInt(slider2.value,10)); });
+  tabBtns.forEach(function(b){
+    b.addEventListener("click",function(){
+      tabBtns.forEach(function(x){x.classList.remove("sel");});
+      b.classList.add("sel");
+      var t=b.getAttribute("data-tab");
+      readyPanel.style.display=(t==="ready")?"block":"none";
+      makePanel.style.display=(t==="make")?"block":"none";
+    });
+  });
+
+  var TOPICS=[{k:"stoer",em:"💪"},{k:"lief",em:"💛"},{k:"vriendschap",em:"🤝"},{k:"dapper",em:"🦁"},{k:"grappig",em:"😄"},{k:"spannend",em:"⚡"},{k:"avontuur",em:"🗺️"},{k:"magie",em:"✨"},{k:"dieren",em:"🐾"},{k:"ruimte",em:"🚀"}];
+  var selTopic="", selTopicEm="";
+  function renderTopics(){
+    var labels=MKt().topics;
+    topicRow.innerHTML="";
+    TOPICS.forEach(function(t){
+      var b=document.createElement("button");
+      b.className="pill"; b.type="button";
+      if(selTopic && selTopic===(labels[t.k]||t.k)) b.classList.add("sel");
+      b.innerHTML='<span class="em">'+t.em+'</span> '+(labels[t.k]||t.k);
+      b.addEventListener("click",function(){
+        var was=b.classList.contains("sel");
+        topicRow.querySelectorAll(".pill").forEach(function(x){x.classList.remove("sel");});
+        if(!was){ b.classList.add("sel"); selTopic=labels[t.k]||t.k; selTopicEm=t.em; }
+        else { selTopic=""; selTopicEm=""; }
+      });
+      topicRow.appendChild(b);
+    });
+  }
+
+  function applyMakerLang(){
+    var m=MKt();
+    var tb=document.querySelectorAll("#tabs .tab");
+    if(tb[0])tb[0].innerHTML='<span class="em">📚</span> '+m.tabReady;
+    if(tb[1])tb[1].innerHTML='<span class="em">✨</span> '+m.tabMake;
+    document.getElementById("mkQName").textContent=m.qName;
+    heroName.placeholder=m.namePh;
+    document.getElementById("mkQTopic").textContent=m.qTopic;
+    topicFree.placeholder=m.topicPh;
+    document.getElementById("mkQLen").textContent=m.qLen;
+    document.getElementById("mkLenHint").textContent=m.lenHint;
+    makeGo.innerHTML='<span class="em">✨</span> '+m.makeBtn;
+    minOut2.textContent=fmtDuur(parseInt(slider2.value,10));
+    document.getElementById("setTitle").textContent=m.setTitle;
+    document.getElementById("setIntro").textContent=m.setIntro;
+    document.getElementById("lblClaude").textContent=m.lblClaude;
+    document.getElementById("lblEleven").textContent=m.lblEleven;
+    document.getElementById("setSave").innerHTML="💾 "+m.save;
+    document.getElementById("loadVoicesBtn").innerHTML="🎙️ "+m.loadV;
+    document.getElementById("lblVoices").textContent=m.lblVoices;
+    document.getElementById("setFoot").textContent=m.setFoot;
+    renderTopics();
+  }
+
+  // settings modal
+  var settings=document.getElementById("settings");
+  var gear=document.getElementById("gear");
+  var setClose=document.getElementById("setClose");
+  var claudeIn=document.getElementById("claudeKey");
+  var elevenIn=document.getElementById("elevenKey");
+  var setSave=document.getElementById("setSave");
+  var loadVoicesBtn=document.getElementById("loadVoicesBtn");
+  var setSaved=document.getElementById("setSaved");
+  var voiceList=document.getElementById("voiceList");
+
+  function openSettings(){
+    claudeIn.value=cfg.claudeKey||"";
+    elevenIn.value=cfg.elevenKey||"";
+    setSaved.textContent="";
+    settings.classList.add("show");
+    settings.setAttribute("aria-hidden","false");
+    if(cfg.elevenKey) loadVoices();
+  }
+  function closeSettings(){ settings.classList.remove("show"); settings.setAttribute("aria-hidden","true"); try{previewAudio.pause();}catch(e){} }
+  gear.addEventListener("click",openSettings);
+  setClose.addEventListener("click",closeSettings);
+  settings.addEventListener("click",function(e){ if(e.target===settings) closeSettings(); });
+  setSave.addEventListener("click",function(){
+    cfg.claudeKey=claudeIn.value.trim();
+    cfg.elevenKey=elevenIn.value.trim();
+    saveCfg();
+    setSaved.textContent=MKt().saved;
+    if(cfg.elevenKey) loadVoices();
+  });
+  loadVoicesBtn.addEventListener("click",function(){
+    cfg.elevenKey=elevenIn.value.trim(); saveCfg();
+    loadVoices();
+  });
+
+  function renderVoices(list){
+    voiceList.innerHTML="";
+    if(!list||!list.length){ voiceList.innerHTML='<p class="set-foot">'+MKt().noVoices+'</p>'; return; }
+    list.forEach(function(v){
+      var row=document.createElement("div");
+      row.className="voice-item"+(cfg.voiceId===v.voice_id?" sel":"");
+      var play=document.createElement("button");
+      play.className="vplay"; play.type="button"; play.textContent="▶";
+      var nm=document.createElement("span"); nm.className="vname"; nm.textContent=v.name;
+      play.addEventListener("click",function(ev){ ev.stopPropagation(); if(v.preview_url){ previewAudio.src=v.preview_url; previewAudio.play().catch(function(){}); } });
+      row.addEventListener("click",function(){
+        cfg.voiceId=v.voice_id; cfg.voiceName=v.name; saveCfg();
+        voiceList.querySelectorAll(".voice-item").forEach(function(x){x.classList.remove("sel");});
+        row.classList.add("sel");
+      });
+      row.appendChild(play); row.appendChild(nm);
+      voiceList.appendChild(row);
+    });
+  }
+  function loadVoices(){
+    if(!cfg.elevenKey){ voiceList.innerHTML='<p class="set-foot">'+MKt().needEleven+'</p>'; return; }
+    voiceList.innerHTML='<p class="set-foot">…</p>';
+    fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":cfg.elevenKey}})
+      .then(function(r){ if(!r.ok)throw new Error(r.status); return r.json(); })
+      .then(function(d){ renderVoices(d.voices||[]); })
+      .catch(function(e){ voiceList.innerHTML='<p class="set-foot" style="color:#ff9d8a">'+MKt().voiceErr+" ("+e.message+")</p>"; });
+  }
+
+  // story generation
+  function parseStory(raw){
+    var s=(raw||"").trim();
+    s=s.replace(/^```(json)?/i,"").replace(/```$/,"").trim();
+    var a=s.indexOf("{"), b=s.lastIndexOf("}");
+    if(a>=0&&b>a) s=s.slice(a,b+1);
+    return JSON.parse(s);
+  }
+  function generateStory(opts){
+    var words=opts.minutes*WPM;
+    var langName={nl:"Nederlands",en:"Engels",de:"Duits",fr:"Frans",es:"Spaans"}[opts.lang]||"Nederlands";
+    var sys="Je bent een liefdevolle verteller die bedtijdverhaaltjes schrijft voor een jongen van 9 jaar. "+
+      "De verhaaltjes zijn warm, fantasierijk en eindigen altijd rustig en geruststellend, met de held die veilig en tevreden gaat slapen. "+
+      "Alleen positieve, veilige avonturen; spannende stukjes lopen altijd goed af en zijn nooit echt eng. Geen geweld. Gebruik eenvoudige, levendige taal. "+
+      "Antwoord ALLEEN met geldige JSON, zonder tekst eromheen, exact in dit formaat: "+
+      '{"title": "...", "paragraphs": ["...", "..."], "points": ["...", "..."]}. '+
+      "paragraphs is het verhaal opgesplitst in korte alinea's van 2 tot 4 zinnen (zodat het stukje voor stukje voorgelezen kan worden); samen ongeveer "+words+" woorden. "+
+      "points zijn 4 tot 7 korte steekwoorden die de grote lijn van het verhaal samenvatten, om zelf na te vertellen. "+
+      "Schrijf alles in deze taal: "+langName+".";
+    var user="Schrijf een bedtijdverhaaltje.\nHeld / hoofdpersoon: "+opts.name+"\nOnderwerp of gevoel: "+opts.topic+"\nLengte: ongeveer "+words+" woorden (dat is "+opts.minutes+" minuten voorlezen).";
+    var maxtok=Math.min(20000, Math.round(words*1.9)+1200);
+    return fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"x-api-key":cfg.claudeKey,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:MODEL,max_tokens:maxtok,system:sys,messages:[{role:"user",content:user}]})
+    }).then(function(r){ return r.json().then(function(d){ if(!r.ok){ throw new Error((d&&d.error&&d.error.message)||("Claude "+r.status)); } return d; }); })
+      .then(function(d){ var txt=(d.content&&d.content[0]&&d.content[0].text)||""; return parseStory(txt); });
+  }
+  function ttsGenerate(text){
+    return fetch("https://api.elevenlabs.io/v1/text-to-speech/"+(cfg.voiceId||PAPA_VOICE),{
+      method:"POST",
+      headers:{"xi-api-key":cfg.elevenKey,"content-type":"application/json","accept":"audio/mpeg"},
+      body:JSON.stringify({text:text, model_id:"eleven_multilingual_v2", voice_settings:{stability:0.5,similarity_boost:0.8,style:0,use_speaker_boost:true}})
+    }).then(function(r){ if(!r.ok)throw new Error("stem "+r.status); return r.blob(); })
+      .then(function(b){ return URL.createObjectURL(b); });
+  }
+
+  function setStatus(msg,isErr){ makeStatus.textContent=msg; makeStatus.classList.toggle("err",!!isErr); }
+  makeGo.addEventListener("click",function(){
+    if(!cfg.claudeKey){ setStatus(MKt().errNoClaude,true); return; }
+    var m=MKt();
+    var name=(heroName.value||"").trim()||m.defName;
+    var free=(topicFree.value||"").trim();
+    var topic=[selTopic,free].filter(Boolean).join(" — ")||m.defTopic;
+    var mins=parseInt(slider2.value,10);
+    makeGo.disabled=true; setStatus("✍️ "+m.writing,false);
+    generateStory({name:name,topic:topic,minutes:mins,lang:lang}).then(function(story){
+      makeGo.disabled=false; setStatus("",false);
+      var paras=(story.paragraphs||[]).filter(function(p){return p&&(""+p).trim();}).map(function(p){return (""+p).trim();});
+      if(!paras.length) throw new Error("leeg");
+      var segArr=paras.map(function(p){ return {text:p, tts:true}; });
+      var sub=m.about+" "+fmtDuur(mins);
+      openReader(story.title||name, sub, selTopicEm||"✨", segArr, story.points||[]);
+    }).catch(function(e){
+      makeGo.disabled=false; setStatus("😢 "+m.errGen+" ("+e.message+")",true);
+    });
+  });
+
   applyLang();
 })();
 </script>
